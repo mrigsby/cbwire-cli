@@ -1,0 +1,6 @@
+	/**
+	 * |hint|
+	 */
+	function |action|(){
+
+	}

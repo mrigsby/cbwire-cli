@@ -1,0 +1,9 @@
+	<script>
+		document.addEventListener('livewire:init', () => {
+			Livewire.hook('component.init', ({ component, cleanup }) => {
+				if( component.id === '#_getID()#' ){
+					window._|wireName| = component.$wire;
+				}
+			});
+		});
+	</script>

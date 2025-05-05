@@ -1,0 +1,3 @@
+    function onMount( event, rc, prc, params ){
+        // data.someValue = params.someValue;
+    }

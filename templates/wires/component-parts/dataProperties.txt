@@ -1,0 +1,4 @@
+	// Data properties
+	data = {
+|dataPropertyKeys|
+	};

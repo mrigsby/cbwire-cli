@@ -1,0 +1,5 @@
+    function onRender() {
+        // return "<div>direct html</div>;
+        // return template( "some.custom.path" );
+        return template( _getViewPath() ); // CBWIRE's default method
+    }
