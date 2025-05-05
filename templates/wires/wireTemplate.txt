@@ -8,5 +8,5 @@
             <p>Good Afternoon!</p>
         </cfif>
     </|outerElementType|><!--- /Wire Outer Element | Wire must be wrapped in a single outer HTML element --->
-	|wireJSInit|
+|wireJSInit|
 </cfoutput>

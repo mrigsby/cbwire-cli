@@ -47,7 +47,7 @@
 		onUpdateProps			= "",
 		wiresDirectory          = "wires",
 		appMapping              = "/",
-		description             = "I am a new wire component for CBWIRE!!!",
+		description             = "Your wire description can go here!",
 		boolean open            = false,
 		boolean force           = false
 	){
@@ -80,10 +80,10 @@
 		var jsInitCode = fileRead( "#variables.settings.templatesPath#/wires/template-parts/jsInit.txt" );
 
 		// Lifecycle events
-		var eventOnHydrate = fileRead( "#variables.settings.templatesPath#/wires/component-parts/onHydrate.txt" );
-		var eventOnMount = fileRead( "#variables.settings.templatesPath#/wires/component-parts/onMount.txt" );
-		var eventOnRender = fileRead( "#variables.settings.templatesPath#/wires/component-parts/onRender.txt" );
-		var eventOnUpdate = fileRead( "#variables.settings.templatesPath#/wires/component-parts/onUpdate.txt" );
+		var eventOnHydrate = fileRead( "#variables.settings.templatesPath#/wires/component-parts/lifecycle-methods/onHydrate.txt" );
+		var eventOnMount = fileRead( "#variables.settings.templatesPath#/wires/component-parts/lifecycle-methods/onMount.txt" );
+		var eventOnRender = fileRead( "#variables.settings.templatesPath#/wires/component-parts/lifecycle-methods/onRender.txt" );
+		var eventOnUpdate = fileRead( "#variables.settings.templatesPath#/wires/component-parts/lifecycle-methods/onUpdate.txt" );
 
 		// build wire template
 		var wireTemplate = replaceNoCase(
@@ -115,11 +115,6 @@
 			);
 		}
 
-
-
-		jsInitCode
-
-
 		// Build Component : |wireDescription|, |dataProperties|, |actions|, |lifeCycleMethods|
 		wireComponent = replaceNoCase(
 			wireComponent,
@@ -148,7 +143,7 @@
 		wireComponent = replaceNoCase(
 			wireComponent,
 			"|dataProperties|",
-			arguments.description,
+			dataProperties,
 			"all"
 		);
 
@@ -228,7 +223,7 @@
 				lifeCycleMethods &= replaceNoCase(
 					eventOnHydrate,
 					"|dataProperty|",
-					onHydrateProps[i],
+					utility.camelCaseUpper(onHydrateProps[i]),
 					"all"
 				);
 			}
@@ -239,7 +234,7 @@
 				lifeCycleMethods &= replaceNoCase(
 					eventOnUpdate,
 					"|dataProperty|",
-					onUpdateProps[i],
+					utility.camelCaseUpper(onUpdateProps[i]),
 					"all"
 				);
 			}

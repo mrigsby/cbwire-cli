@@ -1,0 +1,25 @@
+{
+    "name":"CBWIRE CLI",
+    "version":"0.1.0",
+    "location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/testbox-cli/1.6.0/testbox-cli-1.6.0.zip",
+    "slug":"cbwire-cli",
+    "author":"Michael Rigsby (OIS Technologies)",
+    "homepage":"https://www.oistech.com",
+    "documentation":"https://github.com/mrigsby/cbwire-cli",
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/mrigsby/cbwire-cli"
+    },
+    "bugs":"https://github.com/mrigsby/cbwire-cli/issues",
+    "shortDescription":"The UN-Official CommandBox CLI for CBWIRE",
+    "type":"commandbox-modules",
+    "keywords":[],
+    "contributors":[],
+    "ignore":[
+        "**/.*",
+        "build/*",
+        "./tests/**",
+        "./tmp/**"
+    ],
+    "scripts":{}
+}
