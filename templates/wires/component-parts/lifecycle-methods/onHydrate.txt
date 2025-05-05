@@ -1,4 +1,4 @@
     function onHydrate|dataProperty|( data ) {
         // Note that computed properties have not yet rendered
-        data.hydrated = true;
+        data.hydrated|dataProperty| = true;
     }

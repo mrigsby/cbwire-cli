@@ -1,3 +1,4 @@
+
 	<script>
 		document.addEventListener('livewire:init', () => {
 			Livewire.hook('component.init', ({ component, cleanup }) => {

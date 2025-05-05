@@ -1,5 +1,6 @@
 # cbwire-cli
-CLI for CBWIRE
+
+The UN-Official CommandBox CLI for CBWIRE!
 
 ### Example:
 
