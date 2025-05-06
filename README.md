@@ -33,6 +33,12 @@ It can be installed via the gitub repo until its ready to be published on ForgeB
 
 ## Examples
 
+Please note that CBWIRE CLI registers two command alias's: `create wire` and `wire create`. The means that in all the examples below you can leave out the `cbwire` part altogether if you prefer. So `cbwire create wire myWireName` could be `create wire myWireName`. Its your choice! 
+
+#### Super Basic Example
+
+`cbwire create wire myWireName`
+
 #### Basic Example
 
 `cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
@@ -41,10 +47,10 @@ It can be installed via the gitub repo until its ready to be published on ForgeB
 
 `cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
 
-#### Many options with module name (Except singleFileWire)
+#### Many options (WITHOUT singleFileWire)
 
-`cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
+`cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
 
-#### Many options without module name and with singleFileWire
+#### Many options (WITH singleFileWire)
 
 `cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force --singleFileWire`
