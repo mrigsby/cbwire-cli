@@ -37,9 +37,10 @@
 	 */
 
 |actions|
+|placeholder|
 	/**
 	 * Lifecycle Methods
 	 * CBWIRE Docs: https://cbwire.ortusbooks.com/the-essentials/lifecycle-events
 	 */
-	 
+
 |lifeCycleMethods|

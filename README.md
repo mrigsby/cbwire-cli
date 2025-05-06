@@ -2,13 +2,15 @@
 
 ## The UN-Official CommandBox CLI for CBWIRE!
 
-Primarily used for scaffolding wires with mulitple options
+If you are anything like me you will happily spend hours coding to save yourself a few minutes 🤣. Here is my latest result of saving myself a few minutes. I present the UN-Official CBWIRE CLI! It is primarily used for scaffolding wires and has many options. I'm not sure if there is much else that a CLI could do to expedite and streamline the use of CBWIRE but let me know if you have any ideas! I tried to include lots of comments and links to the CBWIRE docs to help get you started. I hope it helps. Enjoy!
 
 ## Installation
 
 Install the commands via CommandBox like so:
 
 `box install git://github.com/mrigsby/cbwire-cli.git`
+
+It can be installed via the gitub repo until its ready to be published on ForgeBox
 
 ## Command Line Arguments
 
@@ -27,6 +29,7 @@ Install the commands via CommandBox like so:
 - `open` : Boolean : If true open the wire component & template once generated
 - `force` : Boolean : If true force overwrite of existing wires
 - `singleFileWire` : Boolean : If true creates a single file wire
+- `includePlaceholder`	: Boolean : If true inserts a placeholder action in the wire component for lazy loading wires
 
 ## Examples
 
@@ -38,10 +41,10 @@ Install the commands via CommandBox like so:
 
 `cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
 
-#### All options with module name (Except singleFileWire)
+#### Many options with module name (Except singleFileWire)
 
 `cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
 
-#### All options without module name and with singleFileWire
+#### Many options without module name and with singleFileWire
 
 `cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force --singleFileWire`

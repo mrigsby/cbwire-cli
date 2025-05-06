@@ -14,38 +14,40 @@
 	}
 
 	/**
-	 * @name             String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
-	 * @dataProps        String : A comma-delimited list of data property keys to add.
-	 * @lockedDataProps	 String : A comma-delimited list of data property keys to lock.
-	 * @actions          String : A comma-delimited list of actions to generate
-	 * @outerElement	 String : The outer element type to use for the wire. Defaults to "div"
-	 * @jsWireRef		 Boolean : If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
-	 * @lifeCycleEvents  String : A comma-delimited list of life cycle events to generate. If none provided, only onMount() will be generated.
-	 * @onHydrateProps   String : A comma-delimited list of properties to create onHydrate() Property methods for in the wire.
-	 * @onUpdateProps    String : A comma-delimited list of properties to create onUpdate() Property methods for in the wire.
-	 * @wiresDirectory   String : The directory where your wires are stored. Defaults to standard `wires` directory.
-	 * @appMapping       String : The root location of the application in the web root: ex: /MyApp or / if in the root
-	 * @description      String : The wire component hint description
-	 * @open             Boolean : If true open the wire component & template once generated
-	 * @force            Boolean : If true force overwrite of existing wires
-	 * @singleFileWire	 Boolean : If true creates a single file wire
+	 * @name             	String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
+	 * @dataProps        	String : A comma-delimited list of data property keys to add.
+	 * @lockedDataProps	 	String : A comma-delimited list of data property keys to lock.
+	 * @actions          	String : A comma-delimited list of actions to generate
+	 * @outerElement	 	String : The outer element type to use for the wire. Defaults to "div"
+	 * @jsWireRef		 	Boolean : If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
+	 * @lifeCycleEvents  	String : A comma-delimited list of life cycle events to generate. If none provided, only onMount() will be generated.
+	 * @onHydrateProps   	String : A comma-delimited list of properties to create onHydrate() Property methods for in the wire.
+	 * @onUpdateProps    	String : A comma-delimited list of properties to create onUpdate() Property methods for in the wire.
+	 * @wiresDirectory   	String : The directory where your wires are stored. Defaults to standard `wires` directory.
+	 * @appMapping       	String : The root location of the application in the web root: ex: /MyApp or / if in the root
+	 * @description      	String : The wire component hint description
+	 * @open             	Boolean : If true open the wire component & template once generated
+	 * @force            	Boolean : If true force overwrite of existing wires
+	 * @singleFileWire		Boolean : If true creates a single file wire
+	 * @includePlaceholder	Boolean : If true inserts a placeholder action in the wire component for lazy loading wires
 	 **/
 	function run(
 		required name,
-		dataProps				= "",
-		lockedDataProps			= "",
-		actions                 = "",
-		outerElement			= "div",
-		jsWireRef				= false,
-		lifeCycleEvents			= "",
-		onHydrateProps		 	= "",
-		onUpdateProps			= "",
-		wiresDirectory          = "wires",
-		appMapping              = "/",
-		description             = "This wire was created by the cbwire CLI! Please update me!",
-		boolean open            = false,
-		boolean force           = false,
-		boolean singleFileWire  = false
+		dataProps					= "",
+		lockedDataProps				= "",
+		actions                 	= "",
+		outerElement				= "div",
+		jsWireRef					= false,
+		lifeCycleEvents				= "",
+		onHydrateProps		 		= "",
+		onUpdateProps				= "",
+		wiresDirectory          	= "wires",
+		appMapping              	= "/",
+		description             	= "This wire was created by the cbwire CLI! Please update me!",
+		boolean open            	= false,
+		boolean force           	= false,
+		boolean singleFileWire  	= false,
+		boolean includePlaceholder	= false
 	){
 		var moduleName = "";
 		// check for module in name and handle finding module directory, path and setting name properly
@@ -67,6 +69,7 @@
 		wireComponent 		= buildData( wireComponent, arguments.dataProps );
 		wireComponent 		= buildLockedData( wireComponent, arguments.lockedDataProps );
 		wireComponent 		= buildActions( wireComponent, arguments.actions );
+		wireComponent 		= buildPlaceholder( wireComponent, arguments.outerElement, arguments.includePlaceholder );
 		wireComponent 		= buildLifeCycleMethods( wireComponent, arguments.lifeCycleEvents, arguments.onHydrateProps, arguments.onUpdateProps );
 
 		// set template path and create dir if it doesn't exist
@@ -198,6 +201,20 @@
 			generatedActions,
 			"all"
 		);
+	}
+
+	function buildPlaceholder( wireComponent, outerElement, includePlaceholder ){
+		if( arguments.includePlaceholder ){
+			wireComponent = replaceNoCase(
+				wireComponent,
+				"|placeholder|",
+				fileRead( "#variables.settings.templatesPath#/wires/component-parts/lifecycle-methods/placeholder.txt" ),
+				"all"
+			);
+			return replaceNoCase( wireComponent, "|outerElementType|", arguments.outerElement, "all" );
+		}else{
+			return replaceNoCase( wireComponent, "|placeholder|", "", "all" );
+		}
 	}
 
 	function buildLifeCycleMethods( wireComponent, lifeCycleEvents, onHydrateProps, onUpdateProps ){

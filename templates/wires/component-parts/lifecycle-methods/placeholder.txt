@@ -1,0 +1,14 @@
+    /**
+	 * Placeholder (For Lazy Loading)
+	 * CBWIRE Docs: https://cbwire.ortusbooks.com/features/lazy-loading#placeholder
+	 */
+	
+	function placeholder() {
+		// render a ColdBox view
+
+		// renders ./views/spinner.cfm
+		// return view( "spinner" ); 
+
+		// return your own HTML
+        return "<|outerElementType|>Loading...</|outerElementType|>";
+    }
