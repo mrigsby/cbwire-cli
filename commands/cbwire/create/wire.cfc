@@ -1,9 +1,9 @@
 /**
- *  Create a new wire in an existing ColdBox application.  Make sure you are running this command in the root
+ *  Create a new wire in an existing ColdBox application.  Make sure you are running this command in the app root
  *  of your app for it to find the correct folder.  
  * .
  * {code:bash}
- * cbwire create wire myNewWire index,foo,bar --open
+ * cbwire create wire myNewWire dataProp1,dataProp2,dataProp3 --open
  * {code}
  *
  **/
@@ -22,19 +22,19 @@
 	}
 
 	/**
-	 * @name             Name of the wire to create without extensions. @module can be used to place in a module wires directory.
-	 * @dataProps        A comma-delimited list of data property keys to add.
-	 * @actions          A comma-delimited list of actions to generate
-	 * @outerElement	 The outer element type to use for the wire. Defaults to "div"
-	 * @jsWireRef		 Boolean value, If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
-	 * @lifeCycleEvents  A comma-delimited list of life cycle events to generate. If none provided, only onMount() will be generated.
-	 * @onHydrateProps   A comma-delimited list of properties to create onHydrate[ Property ]() methods for in the wire.
-	 * @onUpdateProps    A comma-delimited list of properties to create onUpdate[ Property ]() methods for in the wire.
-	 * @wiresDirectory   The directory where your views are stored. Only used if views is set to true.
-	 * @appMapping       The root location of the application in the web root: ex: /MyApp or / if in the root
-	 * @description      The wire component hint description
-	 * @open             Open the wire component & template once generated
-	 * @force            Force overwrite of existing handler
+	 * @name             String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
+	 * @dataProps        String : A comma-delimited list of data property keys to add.
+	 * @actions          String : A comma-delimited list of actions to generate
+	 * @outerElement	 String : The outer element type to use for the wire. Defaults to "div"
+	 * @jsWireRef		 Boolean : If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
+	 * @lifeCycleEvents  String : A comma-delimited list of life cycle events to generate. If none provided, only onMount() will be generated.
+	 * @onHydrateProps   String : A comma-delimited list of properties to create onHydrate() Property methods for in the wire.
+	 * @onUpdateProps    String : A comma-delimited list of properties to create onUpdate() Property methods for in the wire.
+	 * @wiresDirectory   String : The directory where your wires are stored. Defaults to standard `wires` directory.
+	 * @appMapping       String : The root location of the application in the web root: ex: /MyApp or / if in the root
+	 * @description      String : The wire component hint description
+	 * @open             Boolean : If true open the wire component & template once generated
+	 * @force            Boolean : If true force overwrite of existing wires
 	 **/
 	function run(
 		required name,
