@@ -15,7 +15,7 @@
     "description":"An UN-Official CLI for CBWIRE\n\nThis is a command line interface for CBWIRE primarily used for scaffolding wires.",
     "instructions":"",
     "changelog":"",
-    "type":"modules",
+    "type":"commandbox-modules",
     "keywords":["cbwire","commandbox","cli"],
     "private":false,
     "projectURL":"https://github.com/mrigsby/cbwire-cli",
