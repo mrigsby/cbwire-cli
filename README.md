@@ -2,7 +2,7 @@
 
 ## The UN-Official CommandBox CLI for CBWIRE!
 
-Primarily a used to scaffolding wires with mulitple options
+Primarily used for scaffolding wires with mulitple options
 
 ## Installation
 
@@ -30,10 +30,18 @@ Install the commands via CommandBox like so:
 
 ## Examples
 
+#### Basic Example
+
 `cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
+
+#### Basic Example with module name using myWireName@MyModuleName
 
 `cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
 
+#### All options with module name (Except singleFileWire)
+
 `cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
 
-`cbwire create wire name="myWireName@wireTesting" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
+#### All options without module name and with singleFileWire
+
+`cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force --singleFileWire`
