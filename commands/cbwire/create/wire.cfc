@@ -89,7 +89,7 @@
 			// update description in singleFileWireScript.txt template
 			wireComponent = replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
 			// insert into wire template
-			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", utility.BREAK & wireComponent, "all" );
+			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", utility.BREAK & utility.BREAK & wireComponent, "all" );
 		}else{
 			wireComponent = replaceNoCase( 
 				fileRead( "#variables.settings.templatesPath#/wires/component-parts/wireComponentWrapper.txt" ), 
