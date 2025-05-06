@@ -14,6 +14,7 @@ Install the commands via CommandBox like so:
 
 - `name` : String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
 - `dataProps` : String : A comma-delimited list of data property keys to add.
+- `lockedDataProps` : String : A comma-delimited list of data property keys to lock.
 - `actions` : String : A comma-delimited list of actions to generate
 - `outerElement` : String : The outer element type to use for the wire. Defaults to "div"
 - `jsWireRef` : Boolean : If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
@@ -25,9 +26,14 @@ Install the commands via CommandBox like so:
 - `description` : String : The wire component hint description
 - `open` : Boolean : If true open the wire component & template once generated
 - `force` : Boolean : If true force overwrite of existing wires
+- `singleFileWire` : Boolean : If true creates a single file wire
 
 ## Examples
 
 `cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
 
-`cbwire create wire name="myWireName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
+`cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" actions="saveSomething,doSomething,GetSomething" --jsWireRef --open`
+
+`cbwire create wire name="myWireName@MyModuleName" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`
+
+`cbwire create wire name="myWireName@wireTesting" dataProps="counter1,counter2,counter3" lockedDataProps="counter2,counter3" actions="saveSomething,doSomething,GetSomething" outerElement="p" lifeCycleEvents="onRender,onHydrate,onMount,onUpdate" onHydrateProps="counter2,counter3" onUpdateProps="counter1,counter2" description="This is my wire description" --jsWireRef --open --force`

@@ -11,3 +11,5 @@
     </|outerElementType|>
 |wireJSInit|
 </cfoutput>
+
+|singeFileWireComponent|

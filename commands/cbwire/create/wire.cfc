@@ -24,6 +24,7 @@
 	/**
 	 * @name             String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
 	 * @dataProps        String : A comma-delimited list of data property keys to add.
+	 * @lockedDataProps	 String : A comma-delimited list of data property keys to lock.
 	 * @actions          String : A comma-delimited list of actions to generate
 	 * @outerElement	 String : The outer element type to use for the wire. Defaults to "div"
 	 * @jsWireRef		 Boolean : If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
@@ -35,10 +36,12 @@
 	 * @description      String : The wire component hint description
 	 * @open             Boolean : If true open the wire component & template once generated
 	 * @force            Boolean : If true force overwrite of existing wires
+	 * @singleFileWire	 Boolean : If true creates a single file wire
 	 **/
 	function run(
 		required name,
 		dataProps				= "",
+		lockedDataProps			= "",
 		actions                 = "",
 		outerElement			= "div",
 		jsWireRef				= false,
@@ -49,7 +52,8 @@
 		appMapping              = "/",
 		description             = "Your wire description can go here!",
 		boolean open            = false,
-		boolean force           = false
+		boolean force           = false,
+		boolean singleFileWire  = false
 	){
 		// check for module in name
 		if( find( "@", arguments.name ) ){
@@ -60,63 +64,77 @@
 			arguments.name = listFirst( arguments.name, "@" );
 		}
 		
-		// This will make each directory canonical and absolute
-		arguments.wiresDirectory = resolvePath( arguments.wiresDirectory );
-
-		// Validate wiresDirectory
-		if ( !directoryExists( arguments.wiresDirectory ) ){
-			directoryCreate( arguments.wiresDirectory );
-		}
-
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
+		
+		// Build Template
+		var wireTemplate = buildWireTemplate( arguments.name, arguments.outerElement, arguments.jsWireRef );
 
 		// Build Component 
 		var wireComponent	= fileRead( "#variables.settings.templatesPath#/wires/wireComponent.txt" );
 		wireComponent 		= replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
 		wireComponent 		= buildData( wireComponent, arguments.dataProps );
+		wireComponent 		= buildLockedData( wireComponent, arguments.lockedDataProps );
 		wireComponent 		= buildActions( wireComponent, arguments.actions );
 		wireComponent 		= buildLifeCycleMethods( wireComponent, arguments.lifeCycleEvents, arguments.onHydrateProps, arguments.onUpdateProps );
 
-		// Build Template
-		var wireTemplate = buildWireTemplate( arguments.outerElement, arguments.jsWireRef );
-
-		// set component and template paths and reate dir if it doesn't exist
-		var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfc" );
+		// set template path and create dir if it doesn't exist
 		var wireTemplatePath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfm" );
+		directoryCreate( getDirectoryFromPath( wireTemplatePath ), true, true );
 
-		directoryCreate( getDirectoryFromPath( wireComponentPath ), true, true );
-
-		// Confirm it or Force it
-		if (
-			fileExists( wireComponentPath ) && !arguments.force && !confirm(
-				"The file '#wireComponentPath#' already exists, overwrite it (y/n)?"
-			)
-		) {
-			printWarn( "Exiting..." );
-			return;
-		}
-		if (
-			fileExists( wireTemplatePath ) && !arguments.force && !confirm(
-				"The file '#wireTemplatePath#' already exists, overwrite it (y/n)?"
-			)
-		) {
+		if ( fileExists( wireTemplatePath ) && !arguments.force && !confirm( "The file '#wireTemplatePath#' already exists, overwrite it (y/n)?" ) ) {
 			printWarn( "Exiting..." );
 			return;
 		}
 
-		// Write out the files
-		file action="write" file="#wireComponentPath#" mode="777" output="#wireComponent#";
-		printInfo( "Created Wire Component [#wireComponentPath#]" );
+		if( arguments.singleFileWire ){
+			var singleFileWireStart = fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireStart.txt" );
+			var singleFileWireEnd = fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireEnd.txt" );
 
-		file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
-		printInfo( "Created Wire Template [#wireTemplatePath#]" );
+			wireComponent = replaceNoCase( wireComponent, "|componentStart|", singleFileWireStart, "all" );
+			wireComponent = replaceNoCase( wireComponent, "|componentEnd|", singleFileWireEnd, "all" );
+			
+			// insert into wire template
+			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", wireComponent, "all" );
+
+			file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
+			printInfo( "Created Wire Template [#wireTemplatePath#]" );
+
+
+		}else{
+
+			wireComponent = replaceNoCase( wireComponent, "|componentStart|", 'component extends="cbwire.models.Component" {', "all" );
+			wireComponent = replaceNoCase( wireComponent, "|componentEnd|", '}', "all" );
+
+			// clear single file component placeholder
+			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", "", "all" );
+
+			// set component and template paths and reate dir if it doesn't exist
+			var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfc" );
+
+			// Confirm it or Force it
+			if ( fileExists( wireComponentPath ) && !arguments.force && !confirm( "The file '#wireComponentPath#' already exists, overwrite it (y/n)?" ) ) {
+				printWarn( "Exiting..." );
+				return;
+			}
+
+			// Write out the files
+			file action="write" file="#wireComponentPath#" mode="777" output="#wireComponent#";
+			printInfo( "Created Wire Component [#wireComponentPath#]" );
+
+			file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
+			printInfo( "Created Wire Template [#wireTemplatePath#]" );
+
+		}
 
 		// open file
 		if ( arguments.open ) {
-			openPath( wireComponentPath );
+			if( !arguments.singleFileWire ){
+				openPath( wireComponentPath );
+			}
 			openPath( wireTemplatePath );
 		}
+
 	}
 
 	function buildData( wireComponent, dataProps ){	
@@ -147,6 +165,19 @@
 		);
 	}
 
+	function buildLockedData( wireComponent, lockedDataProps ){
+		if( len( arguments.lockedDataProps ) ){
+			return replaceNoCase(
+				wireComponent,
+				"|lockedDataProperties|",
+				"#utility.BREAK##utility.TAB#locked = " & serializeJSON( listToArray( arguments.lockedDataProps ) ) & ";#utility.BREAK#",
+				"all"
+			);
+		}else{
+			return replaceNoCase( wireComponent, "|lockedDataProperties|", "", "all" );
+		}
+	}
+
 	function buildActions( wireComponent, actions ){
 		var actionContent = fileRead( "#variables.settings.templatesPath#/wires/component-parts/actionContent.txt" );
 		var generatedActions = "";
@@ -159,6 +190,7 @@
 					actionKeys[i],
 					"all"
 				);
+				if( i < actionKeys.len() ) generatedActions &= utility.BREAK;
 			}
 		}else{
 			generatedActions = "#utility.TAB#// Define your actions here#utility.BREAK#";
@@ -208,9 +240,10 @@
 					default:
 						printError( "Unknown lifecycle event: #lifeCycleEvents[i]#" );
 				}
+				if( i < lifeCycleEvents.len() || len( arguments.onHydrateProps ) ) lifeCycleMethods &= utility.BREAK;
 			}
 		}else{
-			lifeCycleMethods &= eventOnMount;
+			lifeCycleMethods &= "#utility.TAB#/*#utility.BREAK#" & eventOnMount & "#utility.TAB#*/#utility.BREAK#";
 		}
 		if( len( arguments.onHydrateProps ) ){
 			var onHydrateProps = listToArray( arguments.onHydrateProps );
@@ -221,6 +254,7 @@
 					utility.camelCaseUpper(onHydrateProps[i]),
 					"all"
 				);
+				if( i < onHydrateProps.len()  || len( arguments.onUpdateProps ) ) lifeCycleMethods &= utility.BREAK;
 			}
 		}
 		if( len( arguments.onUpdateProps ) ){
@@ -232,6 +266,7 @@
 					utility.camelCaseUpper(onUpdateProps[i]),
 					"all"
 				);
+				if( i < onUpdateProps.len() ) lifeCycleMethods &= utility.BREAK;
 			}
 		}
 		return replaceNoCase(
@@ -243,7 +278,7 @@
 
 	}
 
-	function buildWireTemplate( outerElement, jsWireRef ){
+	function buildWireTemplate( name, outerElement, jsWireRef ){
 		var wireTemplate = fileRead( "#variables.settings.templatesPath#/wires/wireTemplate.txt" );
 		var jsInitCode = fileRead( "#variables.settings.templatesPath#/wires/template-parts/jsInit.txt" );
 
