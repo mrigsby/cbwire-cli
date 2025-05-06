@@ -8,7 +8,7 @@ Primarily used for scaffolding wires with mulitple options
 
 Install the commands via CommandBox like so:
 
-`box install cbwire-cli`
+`box install git://github.com/mrigsby/cbwire-cli.git`
 
 ## Command Line Arguments
 

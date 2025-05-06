@@ -7,7 +7,7 @@
  * {code}
  *
  **/
- component aliases="cbwire create cbwire" extends="cbwire-cli.models.BaseCommand" {
+ component aliases="wire create" extends="cbwire-cli.models.BaseCommand" {
 
 	static {
 		HINTS = {
@@ -50,17 +50,17 @@
 		onUpdateProps			= "",
 		wiresDirectory          = "wires",
 		appMapping              = "/",
-		description             = "Your wire description can go here!",
+		description             = "This wire was created by the cbwire CLI! Please update me!",
 		boolean open            = false,
 		boolean force           = false,
 		boolean singleFileWire  = false
 	){
-		// check for module in name
+		var moduleName = "";
+		// check for module in name and handle finding module directory, path and setting name properly
 		if( find( "@", arguments.name ) ){
-			arguments.wiresDirectory = getModuleWiresDirectory( listLast( arguments.name, "@" ), arguments.wiresDirectory );
-			if( arguments.wiresDirectory == "NOTFOUND" ){
-				return;
-			}
+			moduleName = listLast( arguments.name, "@" );
+			arguments.wiresDirectory = getModuleWiresDirectory( moduleName, arguments.wiresDirectory, arguments.appMapping );
+			if( arguments.wiresDirectory == "MODULE_PATH_NOT_FOUND" ) return;
 			arguments.name = listFirst( arguments.name, "@" );
 		}
 		
@@ -72,7 +72,7 @@
 
 		// Build Component 
 		var wireComponent	= fileRead( "#variables.settings.templatesPath#/wires/wireComponent.txt" );
-		wireComponent 		= replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
+		// wireComponent 		= replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
 		wireComponent 		= buildData( wireComponent, arguments.dataProps );
 		wireComponent 		= buildLockedData( wireComponent, arguments.lockedDataProps );
 		wireComponent 		= buildActions( wireComponent, arguments.actions );
@@ -88,43 +88,80 @@
 		}
 
 		if( arguments.singleFileWire ){
-			var singleFileWireStart = fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireStart.txt" );
-			var singleFileWireEnd = fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireEnd.txt" );
 
-			wireComponent = replaceNoCase( wireComponent, "|componentStart|", singleFileWireStart, "all" );
-			wireComponent = replaceNoCase( wireComponent, "|componentEnd|", singleFileWireEnd, "all" );
+			// Build single file wire by updating the component to cfscript with @startWire and @endWire and inserting into the wire template
+			// var singleFileWireStart = fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireStart.txt" );
+			// var singleFileWireEnd = fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireEnd.txt" );
+			/*
+			wireComponent = replaceNoCase( 
+				wireComponent, 
+				"|componentStart|",
+				fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireStart.txt" ), 
+				"all" 
+			);
+			wireComponent = replaceNoCase( 
+				wireComponent, 
+				"|componentEnd|", 
+				fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireEnd.txt" ), 
+				"all"
+			);
+			*/ 
 			
+			wireComponent = replaceNoCase( 
+				fileRead( "#variables.settings.templatesPath#/wires/component-parts/singleFileWireScript.txt" ), 
+				"|wireComponentContent|",
+				wireComponent, 
+				"all" 
+			);
+			
+			// update description in singleFileWireScript.txt template
+			wireComponent = replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
+
 			// insert into wire template
 			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", wireComponent, "all" );
 
-			file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
-			printInfo( "Created Wire Template [#wireTemplatePath#]" );
-
-
 		}else{
 
-			wireComponent = replaceNoCase( wireComponent, "|componentStart|", 'component extends="cbwire.models.Component" {', "all" );
-			wireComponent = replaceNoCase( wireComponent, "|componentEnd|", '}', "all" );
+			// wireComponent = replaceNoCase( wireComponent, "|componentStart|", 'component extends="cbwire.models.Component" {', "all" );
+			// wireComponent = replaceNoCase( wireComponent, "|componentEnd|", '}', "all" );
 
-			// clear single file component placeholder
+			wireComponent = replaceNoCase( 
+				fileRead( "#variables.settings.templatesPath#/wires/component-parts/wireComponentWrapper.txt" ), 
+				"|wireComponentContent|",
+				wireComponent, 
+				"all" 
+			);
+
+			// update description in wireComponentWrapper.txt template
+			wireComponent = replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
+
+			// clear single file component placeholder in template
 			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", "", "all" );
 
 			// set component and template paths and reate dir if it doesn't exist
 			var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfc" );
 
+		}
+
+		// Confirm it or Force it
+		if ( fileExists( wireTemplatePath ) && !arguments.force && !confirm( "The file '#wireTemplatePath#' already exists, overwrite it (y/n)?" ) ) {
+			printWarn( "Exiting..." );
+			return;
+		}
+		// Write out only the template file because the component was injected into the template
+		file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
+		printInfo( "Created Wire Template [#wireTemplatePath#]" );
+
+		if( !arguments.singleFileWire ){
+			// if not single wire we need to write out the component file
 			// Confirm it or Force it
 			if ( fileExists( wireComponentPath ) && !arguments.force && !confirm( "The file '#wireComponentPath#' already exists, overwrite it (y/n)?" ) ) {
 				printWarn( "Exiting..." );
 				return;
 			}
-
-			// Write out the files
+			// Write out the component and template files
 			file action="write" file="#wireComponentPath#" mode="777" output="#wireComponent#";
 			printInfo( "Created Wire Component [#wireComponentPath#]" );
-
-			file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
-			printInfo( "Created Wire Template [#wireTemplatePath#]" );
-
 		}
 
 		// open file
@@ -314,18 +351,23 @@
 
 	}
 
-	function getModuleWiresDirectory( moduleName, wiresDirectory ){
-		if( directoryExists( resolvePath( "modules_app/#moduleName#" ) ) ){
-			return "modules_app/#moduleName#/#wiresDirectory#";
+	function getModuleWiresDirectory( moduleName, wiresDirectory, appMapping ){
+		// add trailing slash if not present
+		if( len( arguments.appMapping ) && right( arguments.appMapping, 1 ) != "/" ){
+			arguments.appMapping &= "/";
+		}
+
+		if( directoryExists( resolvePath( "#arguments.appMapping#modules_app/#moduleName#" ) ) ){
+			return "#arguments.appMapping#modules_app/#moduleName#/#wiresDirectory#";
 		}
 		
-		if( directoryExists( resolvePath( "modules/#moduleName#" ) ) ){
-			return "modules/#moduleName#/#wiresDirectory#";
+		if( directoryExists( resolvePath( "#arguments.appMapping#modules/#moduleName#" ) ) ){
+			return "#arguments.appMapping#modules/#moduleName#/#wiresDirectory#";
 		}
 
 		printWarn( "Module '#moduleName#' not found!" );
 		printWarn( "Exiting..." );
-		return "NOTFOUND";
+		return "MODULE_PATH_NOT_FOUND";
 	}
 
 }
