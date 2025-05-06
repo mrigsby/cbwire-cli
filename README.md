@@ -2,7 +2,7 @@
 
 ## The UN-Official CommandBox CLI for CBWIRE!
 
-Primarily a used to scaffold wires with mulitple options
+Primarily a used to scaffolding wires with mulitple options
 
 ## Installation
 

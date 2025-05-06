@@ -51,87 +51,46 @@
 		boolean open            = false,
 		boolean force           = false
 	){
+		// check for module in name
+		if( find( "@", arguments.name ) ){
+			arguments.wiresDirectory = getModuleWiresDirectory( listLast( arguments.name, "@" ), arguments.wiresDirectory );
+			if( arguments.wiresDirectory == "NOTFOUND" ){
+				return;
+			}
+			arguments.name = listFirst( arguments.name, "@" );
+		}
+		
 		// This will make each directory canonical and absolute
-		arguments.wiresDirectory      = resolvePath( arguments.wiresDirectory );
-
-		// TODO: Add a check to see if the directory is a module or not, verify module exists, and adjust the path accordingly
+		arguments.wiresDirectory = resolvePath( arguments.wiresDirectory );
 
 		// Validate wiresDirectory
-		if ( !directoryExists( arguments.wiresDirectory ) ) {
+		if ( !directoryExists( arguments.wiresDirectory ) ){
 			directoryCreate( arguments.wiresDirectory );
 		}
 
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
 
-		/*******************************************************************
-		 * Read in Templates
-		 *******************************************************************/
+		// Build Component 
+		var wireComponent	= fileRead( "#variables.settings.templatesPath#/wires/wireComponent.txt" );
+		wireComponent 		= replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
+		wireComponent 		= buildData( wireComponent, arguments.dataProps );
+		wireComponent 		= buildActions( wireComponent, arguments.actions );
+		wireComponent 		= buildLifeCycleMethods( wireComponent, arguments.lifeCycleEvents, arguments.onHydrateProps, arguments.onUpdateProps );
 
-		// primaries
-		var wireComponent = fileRead( "#variables.settings.templatesPath#/wires/wireComponent.txt" );
-		var wireTemplate = fileRead( "#variables.settings.templatesPath#/wires/wireTemplate.txt" );
+		// Build Template
+		var wireTemplate = buildWireTemplate( arguments.outerElement, arguments.jsWireRef );
 
-		// Template Parts
-		var jsInitCode = fileRead( "#variables.settings.templatesPath#/wires/template-parts/jsInit.txt" );
-
-		// build wire template
-		var wireTemplate = replaceNoCase(
-			wireTemplate,
-			"|outerElementType|",
-			arguments.outerElement,
-			"all"
-		);
-
-		if( arguments.jsWireRef ){
-			jsInitCode = replaceNoCase(
-				jsInitCode,
-				"|wireName|",
-				arguments.name,
-				"all"
-			);
-			wireTemplate = replaceNoCase(
-				wireTemplate,
-				"|wireJSInit|",
-				jsInitCode,
-				"all"
-			);
-		}else{
-			wireTemplate = replaceNoCase(
-				wireTemplate,
-				"|wireJSInit|",
-				"",
-				"all"
-			);
-		}
-
-		// Build Component : |wireDescription|, |dataProperties|, |actions|, |lifeCycleMethods|
-		wireComponent = replaceNoCase(
-			wireComponent,
-			"|wireDescription|",
-			arguments.description,
-			"all"
-		);
-
-		wireComponent = buildData( wireComponent, arguments.dataProps );
-		wireComponent = buildActions( wireComponent, arguments.actions );
-		wireComponent = buildLifeCycleMethods( wireComponent, arguments.lifeCycleEvents, arguments.onHydrateProps, arguments.onUpdateProps );
-
-
-		// Create dir if it doesn't exist
+		// set component and template paths and reate dir if it doesn't exist
 		var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfc" );
 		var wireTemplatePath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfm" );
 
-		directoryCreate(
-			getDirectoryFromPath( wireComponentPath ),
-			true,
-			true
-		);
+		directoryCreate( getDirectoryFromPath( wireComponentPath ), true, true );
 
 		// Confirm it or Force it
 		if (
 			fileExists( wireComponentPath ) && !arguments.force && !confirm(
-				"The file '#getFileFromPath( wireComponentPath )#' already exists, overwrite it (y/n)?"
+				"The file '#wireComponentPath#' already exists, overwrite it (y/n)?"
 			)
 		) {
 			printWarn( "Exiting..." );
@@ -139,7 +98,7 @@
 		}
 		if (
 			fileExists( wireTemplatePath ) && !arguments.force && !confirm(
-				"The file '#getFileFromPath( wireTemplatePath )#' already exists, overwrite it (y/n)?"
+				"The file '#wireTemplatePath#' already exists, overwrite it (y/n)?"
 			)
 		) {
 			printWarn( "Exiting..." );
@@ -282,6 +241,56 @@
 			"all"
 		);
 
+	}
+
+	function buildWireTemplate( outerElement, jsWireRef ){
+		var wireTemplate = fileRead( "#variables.settings.templatesPath#/wires/wireTemplate.txt" );
+		var jsInitCode = fileRead( "#variables.settings.templatesPath#/wires/template-parts/jsInit.txt" );
+
+		// build wire template
+		var wireTemplate = replaceNoCase(
+			wireTemplate,
+			"|outerElementType|",
+			arguments.outerElement,
+			"all"
+		);
+
+		if( arguments.jsWireRef ){
+			jsInitCode = replaceNoCase(
+				jsInitCode,
+				"|wireName|",
+				arguments.name,
+				"all"
+			);
+			return replaceNoCase(
+				wireTemplate,
+				"|wireJSInit|",
+				jsInitCode,
+				"all"
+			);
+		}else{
+			return replaceNoCase(
+				wireTemplate,
+				"|wireJSInit|",
+				"",
+				"all"
+			);
+		}
+
+	}
+
+	function getModuleWiresDirectory( moduleName, wiresDirectory ){
+		if( directoryExists( resolvePath( "modules_app/#moduleName#" ) ) ){
+			return "modules_app/#moduleName#/#wiresDirectory#";
+		}
+		
+		if( directoryExists( resolvePath( "modules/#moduleName#" ) ) ){
+			return "modules/#moduleName#/#wiresDirectory#";
+		}
+
+		printWarn( "Module '#moduleName#' not found!" );
+		printWarn( "Exiting..." );
+		return "NOTFOUND";
 	}
 
 }
