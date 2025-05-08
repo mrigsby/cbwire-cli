@@ -50,4 +50,16 @@ component singleton {
 		return len( path ) && ( right( path, 1 ) != "/" ) ? path & "/" : path;
 	}
 
+	function stripTrailingAndLeadingSlashes( path ){
+		return stripLeadingSlash( stripTrailingSlash( arguments.path ) );
+	}
+
+	function onlyTrailingSlash( path ){
+		return stripLeadingSlash( addTrailingSlash( path ) );
+	}
+
+	function onlyLeadingSlash( path ){
+		return addLeadingSlash( stripTrailingSlash( path ) );
+	}
+
 }

@@ -24,7 +24,7 @@
 	 * @onHydrateProps   	String : A comma-delimited list of properties to create onHydrate() Property methods for in the wire.
 	 * @onUpdateProps    	String : A comma-delimited list of properties to create onUpdate() Property methods for in the wire.
 	 * @wiresDirectory   	String : The directory where your wires are stored. Defaults to standard `wires` directory.
-	 * @appMapping       	String : The root location of the application in the web root: ex: /MyApp or / if in the root
+	 * @appMapping       	String : The root location of the application in the web root: ex: MyApp/ or leave blank if in the root
 	 * @description      	String : The wire component hint description
 	 * @open             	Boolean : If true open the wire component & template once generated
 	 * @force            	Boolean : If true force overwrite of existing wires
@@ -42,7 +42,7 @@
 		onHydrateProps		 		= "",
 		onUpdateProps				= "",
 		wiresDirectory          	= "wires",
-		appMapping              	= "/",
+		appMapping              	= "",
 		description             	= "This wire was created by the cbwire CLI! Please update me!",
 		boolean open            	= false,
 		boolean force           	= false,
@@ -60,6 +60,9 @@
 			arguments.wiresDirectory = getRootWiresDirectory( arguments.wiresDirectory, arguments.appMapping );
 		}
 		
+
+		printInfo( "Wires Directory: #arguments.wiresDirectory#" );
+
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
 		
@@ -292,15 +295,15 @@
 	}
 
 	function getRootWiresDirectory( wiresDirectory, appMapping ){
-		arguments.appMapping = utility.addTrailingSlash( arguments.appMapping );
-		arguments.wiresDirectory = utility.stripLeadingSlash( arguments.wiresDirectory );
+		arguments.appMapping = utility.onlyTrailingSlash( arguments.appMapping );
+		arguments.wiresDirectory = utility.stripTrailingAndLeadingSlashes( arguments.wiresDirectory );
+		
 		return "#arguments.appMapping##wiresDirectory#";
 	}
 
 	function getModuleWiresDirectory( moduleName, wiresDirectory, appMapping ){
-		// add trailing slash if not present
-		arguments.appMapping = utility.addTrailingSlash( arguments.appMapping );
-		arguments.wiresDirectory = utility.stripLeadingSlash( arguments.wiresDirectory );
+		arguments.appMapping = utility.onlyTrailingSlash( arguments.appMapping );
+		arguments.wiresDirectory = utility.stripTrailingAndLeadingSlashes( arguments.wiresDirectory );
 
 		if( directoryExists( resolvePath( "#arguments.appMapping#modules_app/#moduleName#" ) ) )
 			return "#arguments.appMapping#modules_app/#moduleName#/#wiresDirectory#";
