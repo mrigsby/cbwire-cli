@@ -20,7 +20,7 @@
 	 * @actions          	String : A comma-delimited list of actions to generate
 	 * @outerElement	 	String : The outer element type to use for the wire. Defaults to "div"
 	 * @jsWireRef		 	Boolean : If true, the livewire:init & component.init hooks will be included and a reference to $wire will be created as window.wirename = $wire
-	 * @lifeCycleEvents  	String : A comma-delimited list of life cycle events to generate. If none provided, only onMount() will be generated.
+	 * @lifeCycleEvents  	String : A comma-delimited list of life cycle events names to generate. If none provided, only onMount() will be generated but commented out.
 	 * @onHydrateProps   	String : A comma-delimited list of properties to create onHydrate() Property methods for in the wire.
 	 * @onUpdateProps    	String : A comma-delimited list of properties to create onUpdate() Property methods for in the wire.
 	 * @wiresDirectory   	String : The directory where your wires are stored. Defaults to standard `wires` directory.
