@@ -12,6 +12,8 @@ Install the commands via CommandBox like so:
 
 It can be installed via the gitub repo until its ready to be published on ForgeBox
 
+*💡 Be sure to change into the root of you commandbox application or include the `appMapping` argument*
+
 ## Command Line Arguments
 
 - `name` : String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
