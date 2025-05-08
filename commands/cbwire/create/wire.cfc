@@ -60,9 +60,9 @@
 			arguments.wiresDirectory = getRootWiresDirectory( arguments.wiresDirectory, arguments.appMapping );
 		}
 		
-
-		printInfo( "Wires Directory: #arguments.wiresDirectory#" );
-
+		printInfo( "Wires Relative Path: '#arguments.wiresDirectory#'" );
+		printInfo( "Wires Resolved Path: '#resolvePath( arguments.wiresDirectory )#'" );
+		
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
 		
@@ -295,15 +295,15 @@
 	}
 
 	function getRootWiresDirectory( wiresDirectory, appMapping ){
-		arguments.appMapping = utility.onlyTrailingSlash( arguments.appMapping );
-		arguments.wiresDirectory = utility.stripTrailingAndLeadingSlashes( arguments.wiresDirectory );
-		
+		arguments.wiresDirectory = utility.formatWiresDirectoryPath( arguments.wiresDirectory );
+		arguments.appMapping = utility.formatAppMappingPath( arguments.appMapping );
+
 		return "#arguments.appMapping##wiresDirectory#";
 	}
 
 	function getModuleWiresDirectory( moduleName, wiresDirectory, appMapping ){
-		arguments.appMapping = utility.onlyTrailingSlash( arguments.appMapping );
-		arguments.wiresDirectory = utility.stripTrailingAndLeadingSlashes( arguments.wiresDirectory );
+		arguments.wiresDirectory = utility.formatWiresDirectoryPath( arguments.wiresDirectory );
+		arguments.appMapping = utility.formatAppMappingPath( arguments.appMapping );
 
 		if( directoryExists( resolvePath( "#arguments.appMapping#modules_app/#moduleName#" ) ) )
 			return "#arguments.appMapping#modules_app/#moduleName#/#wiresDirectory#";
@@ -315,6 +315,6 @@
 		return "MODULE_PATH_NOT_FOUND";
 	}
 
-
+	
 
 }

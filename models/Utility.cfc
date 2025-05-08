@@ -34,36 +34,39 @@ component singleton {
 		return camelCase( arguments.target, true );
 	}
 
-	function stripLeadingSlash( path ){
-		if( len( path ) < 2 ) return path;
-		return left( path, 1 ) == "/" ? right( path, len( path ) - 1 ) : path;
-	}
-	
-	function addLeadingSlash( path ){
-		if( len( path ) < 2 ) return path;
-		return left( path, 1  != "/" ) ? "/" & path : path;
-	}
-
-	function stripTrailingSlash( path ){
-		if( len( path ) < 2 ) return path;
-		return right( path, 1 ) == "/" ? left( path, len( path ) - 1 ) : path;
-	}
-
-	function addTrailingSlash( path ){
-		if( len( path ) < 2 ) return path;
-		return right( path, 1 ) != "/" ? path & "/" : path;
+	function formatAppMappingPath( path ){
+		if( arguments.path == "/" || arguments.path == "\") arguments.path = "";
+		if( len( arguments.path ) ){
+			// add trailing slash if path is not empty and does not end with a slash
+			if( len( arguments.path ) && right( arguments.path, 1 ) != "/" ){
+				arguments.path = arguments.path & "/";
+			}
+			// Remove leading slashes if path starts with a slash
+			if( len( arguments.path ) && left( arguments.path, 1 ) == "/" ){
+				arguments.path = right( arguments.path, len( arguments.path ) - 1 );
+			}
+		}
+		return arguments.path;
 	}
 
-	function stripTrailingAndLeadingSlashes( path ){
-		return stripLeadingSlash( stripTrailingSlash( arguments.path ) );
-	}
+	function formatWiresDirectoryPath( path ){
+		if( arguments.path == "/" || arguments.path == "\") arguments.path = "";
+		if( len( arguments.path ) ){
+			// strip trailing slashes if path ends with a slash
+			if( len( arguments.path ) && right( arguments.path, 1 ) == "/" ){
+				var leftCount = len( arguments.path );
+				if( len( arguments.path ) > 1 ) leftCount -= 1;
+				arguments.path = left( arguments.path, leftPos )
+			}
+			// strip leading slashes if path starts with a slash
+			if( len( arguments.path ) && left( arguments.path, 1 ) == "/" ){
+				var rightCount = len( arguments.path );
+				if( len( arguments.path ) > 1 ) rightCount -= 1;
+				arguments.path = right( arguments.path, len( arguments.path ) - 1 );
+			}
+		}
 
-	function onlyTrailingSlash( path ){
-		return stripLeadingSlash( addTrailingSlash( path ) );
-	}
-
-	function onlyLeadingSlash( path ){
-		return addLeadingSlash( stripTrailingSlash( path ) );
+		return arguments.path;
 	}
 
 }
