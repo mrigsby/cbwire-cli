@@ -35,19 +35,23 @@ component singleton {
 	}
 
 	function stripLeadingSlash( path ){
-		return len( path ) &&  ( left( path, 1 ) == "/" ) ? right( path, len( path ) - 1 ) : path;
+		if( !len( path ) ) return path;
+		return left( path, 1 ) == "/" ? right( path, len( path ) - 1 ) : path;
 	}
 	
 	function addLeadingSlash( path ){
-		return len( path ) &&  ( left( path, 1 ) != "/" ) ? "/" & path : path;
+		if( !len( path ) ) return path;
+		return left( path, 1  != "/" ) ? "/" & path : path;
 	}
 
 	function stripTrailingSlash( path ){
-		return len( path ) && ( right( path, 1 ) == "/" ) ? left( path, len( path ) - 1 ) : path;
+		if( !len( path ) ) return path;
+		return right( path, 1 ) == "/" ? left( path, len( path ) - 1 ) : path;
 	}
 
 	function addTrailingSlash( path ){
-		return len( path ) && ( right( path, 1 ) != "/" ) ? path & "/" : path;
+		if( !len( path ) ) return path;
+		return right( path, 1 ) != "/" ? path & "/" : path;
 	}
 
 	function stripTrailingAndLeadingSlashes( path ){
