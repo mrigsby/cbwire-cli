@@ -56,6 +56,8 @@
 			arguments.wiresDirectory = getModuleWiresDirectory( moduleName, arguments.wiresDirectory, arguments.appMapping );
 			if( arguments.wiresDirectory == "MODULE_PATH_NOT_FOUND" ) return;
 			arguments.name = listFirst( arguments.name, "@" );
+		}else{
+			arguments.wiresDirectory = getRootWiresDirectory( arguments.wiresDirectory, arguments.appMapping );
 		}
 		
 		// Allow dot-delimited paths
@@ -289,10 +291,16 @@
 		}
 	}
 
+	function getRootWiresDirectory( wiresDirectory, appMapping ){
+		arguments.appMapping = utility.addTrailingSlash( arguments.appMapping );
+		arguments.wiresDirectory = utility.stripLeadingSlash( arguments.wiresDirectory );
+		return "#arguments.appMapping##wiresDirectory#";
+	}
+
 	function getModuleWiresDirectory( moduleName, wiresDirectory, appMapping ){
 		// add trailing slash if not present
-		if( len( arguments.appMapping ) && right( arguments.appMapping, 1 ) != "/" )
-			arguments.appMapping &= "/";
+		arguments.appMapping = utility.addTrailingSlash( arguments.appMapping );
+		arguments.wiresDirectory = utility.stripLeadingSlash( arguments.wiresDirectory );
 
 		if( directoryExists( resolvePath( "#arguments.appMapping#modules_app/#moduleName#" ) ) )
 			return "#arguments.appMapping#modules_app/#moduleName#/#wiresDirectory#";
@@ -303,5 +311,7 @@
 		printError( "Module '#moduleName#' not found! Exiting..." );
 		return "MODULE_PATH_NOT_FOUND";
 	}
+
+
 
 }

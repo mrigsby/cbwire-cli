@@ -34,4 +34,20 @@ component singleton {
 		return camelCase( arguments.target, true );
 	}
 
+	function stripLeadingSlash( path ){
+		return len( path ) &&  ( left( path, 1 ) == "/" ) ? right( path, len( path ) - 1 ) : path;
+	}
+	
+	function addLeadingSlash( path ){
+		return len( path ) &&  ( left( path, 1 ) != "/" ) ? "/" & path : path;
+	}
+
+	function stripTrailingSlash( path ){
+		return len( path ) && ( right( path, 1 ) == "/" ) ? left( path, len( path ) - 1 ) : path;
+	}
+
+	function addTrailingSlash( path ){
+		return len( path ) && ( right( path, 1 ) != "/" ) ? path & "/" : path;
+	}
+
 }
