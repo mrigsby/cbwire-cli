@@ -35,22 +35,22 @@ component singleton {
 	}
 
 	function stripLeadingSlash( path ){
-		if( !len( path ) ) return path;
+		if( len( path ) > 1 ) return path;
 		return left( path, 1 ) == "/" ? right( path, len( path ) - 1 ) : path;
 	}
 	
 	function addLeadingSlash( path ){
-		if( !len( path ) ) return path;
+		if( len( path ) > 1 ) return path;
 		return left( path, 1  != "/" ) ? "/" & path : path;
 	}
 
 	function stripTrailingSlash( path ){
-		if( !len( path ) ) return path;
+		if( len( path ) > 1 ) return path;
 		return right( path, 1 ) == "/" ? left( path, len( path ) - 1 ) : path;
 	}
 
 	function addTrailingSlash( path ){
-		if( !len( path ) ) return path;
+		if( len( path ) > 1 ) return path;
 		return right( path, 1 ) != "/" ? path & "/" : path;
 	}
 
