@@ -8,11 +8,9 @@ If you are anything like me you will happily spend hours coding to save yourself
 
 Install via CommandBox like so:
 
-`box install git://github.com/mrigsby/cbwire-cli.git`
+`box install cbwire-cli`
 
-*It can be installed from the gitub repo until its ready to be published on ForgeBox*
-
-*💡 Be sure to change into the root of your ColdBox application or include the `appMapping` argument*
+*💡 Be sure to change into the root of your ColdBox application or include the `appMapping` argument before running commands*
 
 ## Command Line Arguments
 
