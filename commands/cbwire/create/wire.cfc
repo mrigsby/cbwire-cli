@@ -7,7 +7,10 @@
  * {code}
  *
  **/
- component aliases="create wire,wire create" extends="cbwire-cli.models.BaseCommand" {
+ component extends="cbwire-cli.models.BaseCommand" {
+    
+    property name="cliDefaults";
+    property name="baseCliDefaults";
 
 	/**
 	 * @name             	String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
@@ -26,25 +29,42 @@
 	 * @force            	Boolean : If true force overwrite of existing wires
 	 * @singleFileWire		Boolean : If true creates a single file wire
 	 * @includePlaceholder	Boolean : If true inserts a placeholder action in the wire component for lazy loading wires
+	 * @boxlang				Boolean : If true creates wire in Boxlang, otherwise CFML. Defaults to false.
 	 **/
 	function run(
 		required name,
-		dataProps					= "",
-		lockedDataProps				= "",
-		actions                 	= "",
-		outerElement				= "div",
-		jsWireRef					= false,
-		lifeCycleEvents				= "",
-		onHydrateProps		 		= "",
-		onUpdateProps				= "",
-		wiresDirectory          	= "wires",
-		appMapping              	= "",
-		description             	= "This wire was created by the cbwire CLI! Please update me!",
-		boolean open            	= false,
-		boolean force           	= false,
-		boolean singleFileWire  	= false,
-		boolean includePlaceholder	= false
+		dataProps,
+		lockedDataProps,
+		actions,
+		outerElement,
+		lifeCycleEvents,
+		onHydrateProps,
+		onUpdateProps,
+		wiresDirectory,
+		appMapping,
+		description,
+		boolean jsWireRef,
+		boolean singleFileWire,
+		boolean includePlaceholder,
+		boolean boxlang,
+		boolean open,
+		boolean force
 	){
+		// get any defaults from the cbwireDefaults.json file
+        variables.cliDefaults = getCLIDefaults();
+        variables.baseCliDefaults = getBaseCLIDefaults();
+
+		if( structKeyExists( variables.cliDefaults, "create" ) ){
+			for( var k in variables.cliDefaults.create.keyArray() ){
+				var currentValue = variables.cliDefaults.create[ k ];
+				if( !isStruct( currentValue ) ){
+					if( !arguments.keyExists( k ) ){
+						arguments[ k ] = currentValue;
+					}
+				}
+			}
+		}
+
 		var moduleName = "";
 		// check for module in name and handle finding module directory, path and setting name properly
 		if( find( "@", arguments.name ) ){
@@ -60,7 +80,7 @@
 		arguments.name = replace( arguments.name, ".", "/", "all" );
 		
 		// Build Template
-		var wireTemplate = buildWireTemplate( arguments.name, arguments.outerElement, arguments.jsWireRef );
+		var wireTemplate = buildWireTemplate( arguments.name, arguments.outerElement, arguments.jsWireRef, arguments.boxlang );
 
 		// Build Component 
 		var wireComponent	= fileRead( "#variables.settings.templatesPath#/wires/wireComponent.txt" );
@@ -71,7 +91,7 @@
 		wireComponent 		= buildLifeCycleMethods( wireComponent, arguments.lifeCycleEvents, arguments.onHydrateProps, arguments.onUpdateProps );
 
 		// set template path and create dir if it doesn't exist
-		var wireTemplatePath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfm" );
+		var wireTemplatePath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.#arguments.boxlang == false ? "cfm" : "bxm"#" );
 		
 		if( arguments.singleFileWire ){
 			// Build single file wire by updating the component to cfscript with @startWire and @endWire and inserting into the wire template			
@@ -87,17 +107,17 @@
 			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", utility.BREAK & utility.BREAK & wireComponent, "all" );
 		}else{
 			wireComponent = replaceNoCase( 
-				fileRead( "#variables.settings.templatesPath#/wires/component-parts/wireComponentWrapper.txt" ), 
+				fileRead( "#variables.settings.templatesPath#/wires/component-parts/wireComponentWrapper#arguments.boxlang == false ? "CFML" : "BOXLANG"#.txt" ), 
 				"|wireComponentContent|",
 				wireComponent, 
 				"all" 
 			);
-			// update description in wireComponentWrapper.txt template
+			// update description in wireComponentWrapper[CFML|BOXLANG].txt template
 			wireComponent = replaceNoCase( wireComponent, "|wireDescription|", arguments.description, "all" );
 			// clear single file component placeholder in template
 			wireTemplate = replaceNoCase( wireTemplate, "|singeFileWireComponent|", "", "all" );
 			// set component and template paths and create dir if it doesn't exist
-			var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.cfc" );
+			var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.#arguments.boxlang == false ? "cfc" : "bx"#" );
 		}
 
 		// printInfo( "Wires Folder Path (Relative): #arguments.wiresDirectory#" );
@@ -273,10 +293,11 @@
 		return replaceNoCase( wireComponent, "|lifeCycleMethods|", lifeCycleMethods, "all" );
 	}
 
-	function buildWireTemplate( name, outerElement, jsWireRef ){
+	function buildWireTemplate( name, outerElement, jsWireRef, boxlang ){
 		// build wire template
 		var wireTemplate = replaceNoCase(
-			fileRead( "#variables.settings.templatesPath#/wires/wireTemplate.txt" ),
+
+			fileRead( "#variables.settings.templatesPath#/wires/wireTemplate#arguments.boxlang == false ? "CFML" : "BOXLANG"#.txt" ),
 			"|outerElementType|",
 			arguments.outerElement,
 			"all"
@@ -314,7 +335,5 @@
 		printError( "Module '#moduleName#' not found! Exiting..." );
 		return "MODULE_PATH_NOT_FOUND";
 	}
-
-	
 
 }

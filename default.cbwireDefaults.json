@@ -1,0 +1,20 @@
+{
+    "create":{
+		"dataProps":"",
+		"lockedDataProps":"",
+		"actions":"",
+		"outerElement":"div",
+		"lifeCycleEvents":"",
+		"onHydrateProps":"",
+		"onUpdateProps":"",
+		"wiresDirectory":"wires",
+		"appMapping":"",
+		"description":"This wire was created by the cbwire CLI! Please update me!",
+        "jsWireRef":false,
+        "singleFileWire":false,
+        "includePlaceholder":false,
+        "boxlang":false,
+        "open":false,
+        "force":false
+    }
+}

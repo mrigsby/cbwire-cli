@@ -1,5 +1,5 @@
 /**
- * Base Command Handler
+ * CBWire Base Command Handler
  */
 component accessors="true" {
 
@@ -12,40 +12,6 @@ component accessors="true" {
 
 	function init(){
 		return this;
-	}
-
-	/**
-	 * Determines if we are running on a BoxLang server
-	 * or using the BoxLang runner.
-	 *
-	 * @cwd The current working directory
-	 *
-	 * @return boolean
-	 */
-	private function isBoxLangProject( required cwd ){
-		// Detect if it's a BoxLang server first.
-		var serverInfo = variables.serverService.resolveServerDetails( {} ).serverInfo;
-		if ( serverInfo.cfengine.findNoCase( "boxlang" ) ) {
-			return true;
-		}
-
-		// Detect if you have the BoxLang runner set.
-		var boxOptions = variables.packageService.readPackageDescriptor( arguments.cwd );
-		if (
-			boxOptions.testbox.keyExists( "runner" )
-			&& isSimpleValue( boxOptions.testbox.runner )
-			&& boxOptions.testbox.runner == "boxlang"
-		) {
-			return true;
-		}
-
-		// Language mode
-		if ( boxOptions.keyExists( "language" ) && boxOptions.language == "boxlang" ) {
-			return true;
-		}
-
-		// We don't know.
-		return false;
 	}
 
 	function printInfo( required message ){
@@ -76,13 +42,34 @@ component accessors="true" {
 			.line();
 	}
 
-	function toBoxLangClass( required content ){
-		return reReplaceNoCase(
-			arguments.content,
-			"component(\s|\n)?",
-			"class #chr( 13 )#",
-			"one"
-		);
+
+	function formatForCLI( value ) {
+		var result = "";
+		if ( isNull( value ) ) {
+			result = "null";
+		} else if ( isBoolean( value ) ) {
+			result = value ? "true" : "false";
+		} else if ( isNumeric( value ) || isDate( value ) ) {
+			result = value;
+		} else if ( isArray( value ) || isStruct( value ) ) {
+			result = serializeJSON( value );
+		} else if ( isSimpleValue( value ) ) {
+			result = "'" & value & "'";
+		} else {
+			result = "[Unknown Type]";
+		}
+		return result;
 	}
+
+	function getCLIDefaults(){
+		// var rawJSON = fileRead( '#variables.settings.modulePath#/cbwireDefaults.json' );
+		return deserializeJSON( fileRead( '#variables.settings.modulePath#/cbwireDefaults.json' ) );
+	}
+
+	function getBaseCLIDefaults(){
+		// var rawJSON = fileRead( '#variables.settings.modulePath#/cbwireDefaults.json' );
+		return deserializeJSON( fileRead( '#variables.settings.modulePath#/default.cbwireDefaults.json' ) );
+	}
+
 
 }

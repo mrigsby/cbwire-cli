@@ -12,7 +12,10 @@ component {
 	this.cfmapping = "cbwire-cli";
 
 	function configure(){
-		settings = { templatesPath : modulePath & "/templates" }
+		settings = {
+			modulePath : modulePath,
+			templatesPath : modulePath & "/templates" 
+		}
 	}
 
 	function onLoad(){
