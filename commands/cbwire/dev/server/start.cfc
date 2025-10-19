@@ -25,7 +25,10 @@
 		if( !verifyInTestHarnessDirectory() ){
 			return;
 		}
-
+		if( !loadTestingServersConfig() ){
+			return;
+		}
+	
 		shell.clearScreen();
 		printCBWireCLIHeader();
 
@@ -45,7 +48,7 @@
 		
 		print.line();
 
-		var serverToOpen =  multiselect( 'What #variables.testHarnessDirectoryName# server do you want to run? ' )
+		var serverToOpen =  multiselect( 'What #variables.settings.testHarnessDirectoryName# server do you want to run? ' )
 			.options( askOptions )
 			.required()
 			.ask();
@@ -57,7 +60,7 @@
 		}
 
 		shell.clearScreen();
-		printCBWireCLIHeader( "🚀 Starting #variables.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToOpen ].name#" );
+		printCBWireCLIHeader( "🚀 Starting #variables.settings.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToOpen ].name#" );
 		print.line();
 
 		if( arguments.stopRunningTestServers ){
@@ -70,7 +73,7 @@
 			.run();
 
 		print.line();
-		printStyledMessage( "✅️ #variables.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToOpen ].name# is running!" );
+		printStyledMessage( "✅️ #variables.settings.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToOpen ].name# is running!" );
 		print.line();
 
 		if( arguments.webRunner || arguments.commandBoxRunner ){
@@ -82,7 +85,7 @@
 			print.line();
 			waitForKey( message='Press any key to open the TestBox Web Runner in your browser' );
 			shell.clearScreen();
-            print.printCBWireCLIHeader( "🚀 Opening #variables.testHarnessDirectoryName# server #variables.testHarnessServers[ serverToOpen ].name# TestBox Web Runner" );
+            print.printCBWireCLIHeader( "🚀 Opening #variables.settings.testHarnessDirectoryName# server #variables.testHarnessServers[ serverToOpen ].name# TestBox Web Runner" );
 			openURL( theURL );
 			print.line();
         }
@@ -91,7 +94,7 @@
 			print.line();
 			waitForKey( message='Press any key to run the TestBox CommandBox Runner' );
 			shell.clearScreen();
-			printCBWireCLIHeader( "🚀 Running #variables.testHarnessDirectoryName# server #variables.testHarnessServers[ serverToOpen ].name# TestBox CommandBox Runner" );
+			printCBWireCLIHeader( "🚀 Running #variables.settings.testHarnessDirectoryName# server #variables.testHarnessServers[ serverToOpen ].name# TestBox CommandBox Runner" );
 			print.line();
 			command( 'testbox run' )
 				.params( runner=theURL )

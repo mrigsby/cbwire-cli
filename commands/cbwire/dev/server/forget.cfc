@@ -20,6 +20,9 @@
 		if( !verifyInTestHarnessDirectory() ){
 			return;
 		}
+		if( !loadTestingServersConfig() ){
+			return;
+		}
 		
 		shell.clearScreen();
 		printCBWireCLIHeader();
@@ -44,13 +47,13 @@
 
 		if( serverToReset == "ALL" ){
 			shell.clearScreen();
-			printCBWireCLIHeader( "⛔ Forgetting ALL #variables.testHarnessDirectoryName# servers ⛔" );
+			printCBWireCLIHeader( "⛔ Forgetting ALL #variables.settings.testHarnessDirectoryName# servers ⛔" );
 
 			stopAllTestHarnessServers();
 			print.line();
 
 			variables.testHarnessServers.each( function( key, value ) {
-				printStyledMessage( "⛔ Forgetting #variables.testHarnessDirectoryName# server: #value.name#" );
+				printStyledMessage( "⛔ Forgetting #variables.settings.testHarnessDirectoryName# server: #value.name#" );
 				print.line();
 				command( 'server forget' )
 					.params( serverConfigFile="#variables.workingDirectory##value.file#", force=true )
@@ -59,14 +62,14 @@
 			});
 			print.line();
 			
-			printStyledMessage( "✅️ Done Forgetting all #variables.testHarnessDirectoryName# servers." );
+			printStyledMessage( "✅️ Done Forgetting all #variables.settings.testHarnessDirectoryName# servers." );
 			print.line();
 			
 			return;
 		}
 
 		shell.clearScreen();
-		printCBWireCLIHeader( "⛔ Forgetting #variables.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToReset ].name#" );
+		printCBWireCLIHeader( "⛔ Forgetting #variables.settings.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToReset ].name#" );
 		print.line();
 		
 		stopTestHarnessServer( serverToReset );
@@ -77,7 +80,7 @@
 			.run();
 
 		print.line();
-		printStyledMessage( "✅️ Done Forgetting #variables.testHarnessDirectoryName# #variables.testHarnessServers[ serverToReset ].name# server." );
+		printStyledMessage( "✅️ Done Forgetting #variables.settings.testHarnessDirectoryName# #variables.testHarnessServers[ serverToReset ].name# server." );
 		print.line();
 		
 	}

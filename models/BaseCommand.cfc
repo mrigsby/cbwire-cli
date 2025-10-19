@@ -6,8 +6,6 @@ component accessors="true" {
 	property name="utility"        inject="utility@cbwire-cli";
 	property name="settings"       inject="box:modulesettings:cbwire-cli";
 	property name="config"         inject="box:moduleconfig:cbwire-cli";
-	// property name="serverService"  inject="serverService";
-	// property name="packageService" inject="PackageService";
     
 	property name="cliDefaults";
 	property name="baseCliDefaults";
@@ -19,39 +17,6 @@ component accessors="true" {
 	property name="cliDefaultLength" default="120";
 
 	function init(){
-		variables.testHarnessServers = {
-			"adobe@2021" : {
-				"label" : "Adobe ColdFusion 2021",
-				"name" : "cbwire-adobe@2021",
-				"file" : "server-adobe@2021.json"
-			},
-			"adobe@2023" : {
-				"label" : "Adobe ColdFusion 2023",
-				"name" : "cbwire-adobe@2023",
-				"file" : "server-adbobe@2023.json"
-			},
-			"adobe@2025" : {
-				"label" : "Adobe ColdFusion 2025",
-				"name" : "cbwire-adobe@2025",
-				"file" : "server-adbobe@2025.json"
-			},
-			"lucee@5" : {
-				"label" : "Lucee 5",
-				"name" : "cbwire-lucee@5",
-				"file" : "server-lucee@5.json"
-			},
-			"lucee@6" : {
-				"label" : "Lucee 6",
-				"name" : "cbwire-lucee@6",
-				"file" : "server-lucee@6.json"
-			},
-			"boxlang@1" : {
-				"label" : "BoxLang 1",
-				"name" : "cbwire-boxlang-cfml@1",
-				"file" : "server-boxlang-cfml@1.json"
-			}
-		};
-		variables.testHarnessDirectoryName = "test-harness";
 		return this;
 	}
 
@@ -126,26 +91,27 @@ component accessors="true" {
 
 	function verifyInTestHarnessDirectory(){
 		var osPathSeperator = fileSystemUtil.isWindows() ? "\" : "/";
-
-		var testHarnessDirectory = variables.workingDirectory & variables.testHarnessDirectoryName & variables.osPathSeperator;
+		variables.workingDirectory = getCWD();
+		var testHarnessDirectory = variables.workingDirectory & variables.settings.testHarnessDirectoryName & variables.osPathSeperator;
 		// verify in test harness directory, or change to it if it exists or error out
-		if( listLast( variables.workingDirectory , variables.osPathSeperator, false ) == variables.testHarnessDirectoryName ){
-			printStyledMessage( "✅️ You are in the #variables.testHarnessDirectoryName# directory!" );
+		if( listLast( variables.workingDirectory , variables.osPathSeperator, false ) == variables.settings.testHarnessDirectoryName ){
+			print.line( "listLast: " & listLast( variables.workingDirectory , variables.osPathSeperator, false ) );
+			printStyledMessage( "✅️ You are in the #variables.settings.testHarnessDirectoryName# directory!" );
 			return true;
 		}else if( directoryExists( testHarnessDirectory ) ){
-			printStyledMessage(  "⚠️ You are not in the #testHarnessDirectoryName# directory, changing to it now..." );
+			printStyledMessage(  "⚠️ You are not in the #variables.settings.testHarnessDirectoryName# directory, changing to it now..." );
 			command( 'cd' ).params( testHarnessDirectory ).run();
 			variables.workingDirectory = getCWD();
 			if( getCWD() != testHarnessDirectory ){
-					printStyledMessage( "❌ Failed to change directory to #variables.testHarnessDirectoryName# directory" );
+					printStyledMessage( "❌ Failed to change directory to #variables.settings.testHarnessDirectoryName# directory" );
 					return false;
 			}
-			printStyledMessage( "✅️ Successfully changed to #variables.testHarnessDirectoryName# directory" );
+			printStyledMessage( "✅️ Successfully changed to #variables.settings.testHarnessDirectoryName# directory" );
 			return true;
 		}
 		printStyledMessage([
-			"❌ You are not in the #variables.testHarnessDirectoryName# directory",
-			"and could not find #variables.testHarnessDirectoryName# directory in current working directory: #workingDirectory#"
+			"❌ You are not in the #variables.settings.testHarnessDirectoryName# directory",
+			"and could not find #variables.settings.testHarnessDirectoryName# directory in current working directory: #workingDirectory#"
 		]);
 		return false;
 	}
@@ -154,7 +120,7 @@ component accessors="true" {
 		var osPathSeperator = fileSystemUtil.isWindows() ? "\" : "/";
 		variables.workingDirectory = getCWD();
 		// are you in the test-harness directory?
-		if( listLast( variables.workingDirectory , variables.osPathSeperator, false ) == variables.testHarnessDirectoryName ){
+		if( listLast( variables.workingDirectory , variables.osPathSeperator, false ) == variables.settings.testHarnessDirectoryName ){
 			printStyledMessage(  "⚠️ You are not in the CBWIRE module root directory, attempting to change to it now..." );
 			// move up one directory
 			command( 'cd' ).params( ".." ).run();
@@ -244,24 +210,85 @@ component accessors="true" {
 
 	function stopAllTestHarnessServers(){
 		print.line();
-		printStyledMessage( "⛔ Stopping any running #variables.testHarnessDirectoryName# servers" );
+		printStyledMessage( "⛔ Stopping any running #variables.settings.testHarnessDirectoryName# servers" );
 		variables.testHarnessServers.each( function( key, value ) {
 			command( 'server stop' )
 				.params( serverConfigFile="#variables.workingDirectory##value.file#" )
 				.run( returnOutput=true );
 		});
-		printStyledMessage( "✅️ Done Stopping any running #variables.testHarnessDirectoryName# servers." );
+		printStyledMessage( "✅️ Done Stopping any running #variables.settings.testHarnessDirectoryName# servers." );
 		print.line();
 	}
 
 	function stopTestHarnessServer( serverKey ){
 		print.line();
-		printStyledMessage( "⛔ Stopping #variables.testHarnessDirectoryName# server #variables.testHarnessServers[ serverKey ].name# if running" );
+		printStyledMessage( "⛔ Stopping #variables.settings.testHarnessDirectoryName# server #variables.testHarnessServers[ serverKey ].name# if running" );
 		command( 'server stop' )
 			.params( serverConfigFile="#variables.workingDirectory##variables.testHarnessServers[ serverKey ].file#" )
 			.run( returnOutput=true );
-		printStyledMessage( "✅️ Done Stopping #variables.testHarnessDirectoryName# server #variables.testHarnessServers[ serverKey ].name#." );
+		printStyledMessage( "✅️ Done Stopping #variables.settings.testHarnessDirectoryName# server #variables.testHarnessServers[ serverKey ].name#." );
 		print.line();
+	}
+
+	function getTestingServersConfig(){
+		// determing if we are in the root cbwire module directory
+		var osPathSeperator = fileSystemUtil.isWindows() ? "\" : "/";
+		var workingDirectory = getCWD();
+		var testHarnessDirPath = "";
+
+		// are you in the cbwire module root directory?
+		// read box.json file if exists to get module name and slug to verify in root
+		if( fileExists( variables.workingDirectory & "box.json" ) ){
+			var boxJson = deserializeJSON( fileRead( variables.workingDirectory & "box.json" ) );
+			if( boxJson.keyExists( "slug" ) && boxJson.keyExists( "name" ) ){
+				if( boxJson.slug == "cbwire" && boxJson.name == "CBWIRE" ){
+					testHarnessDirPath = variables.workingDirectory & variables.osPathSeperator & variables.settings.testHarnessDirectoryName;
+				}
+			}
+		}
+		// are you in the test-harness directory?
+		if( 
+			len( testHarnessDirPath ) == 0 &&
+			listLast( variables.workingDirectory , variables.osPathSeperator, false ) == variables.settings.testHarnessDirectoryName 
+		){
+			var testHarnessDirPath = getCWD();
+		}
+		if( len( testHarnessDirPath ) == 0 ){
+			return {};
+		}
+		// get server-*.json files in test-harness directory
+		var serverFiles = directoryList( testHarnessDirPath, false, "Name", "server-*.json", "asc", "file" );
+		var serversConfig = {};
+		for( var configFile in serverFiles ){
+			var serverConfig = deserializeJSON( fileRead( testHarnessDirPath & variables.osPathSeperator & configFile ) );
+			serversConfig[ serverConfig.app.cfengine ] = {
+				"name" : serverConfig.name,
+				"file" : configFile,
+				"label" : "#getPrettyCFEngineName( serverConfig.app.cfengine )# ( #configFile# )"
+			};
+		}
+		return serversConfig;
+	}
+
+	function getPrettyCFEngineName( cfEngine ){
+		var prettyName = cfEngine;
+		prettyName = replace( prettyName, "@", " ", "one" );
+		prettyName = replace( prettyName, "adobe", "Adobe ColdFusion", "one" );
+		prettyName = replace( prettyName, "lucee", "Lucee", "one" );
+		prettyName = replace( prettyName, "boxlang", "BoxLang", "one" );
+		return prettyName;
+	}
+
+	function loadTestingServersConfig(){
+		variables.testHarnessServers = getTestingServersConfig();
+		if( variables.testHarnessServers.keyArray().len() == 0 ){
+			print.line();
+			printWarn( "⚠️ No #variables.settings.testHarnessDirectoryName# servers found!" );
+			printStyledMessage( "Please ensure you are in the cbwire module root directory or the #variables.settings.testHarnessDirectoryName# directory." );
+			print.line();
+			return false;
+		}
+		return true;
 	}
 
 }

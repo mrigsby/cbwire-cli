@@ -103,7 +103,6 @@ component singleton {
         }
     }
 
-
 	/**
 	 * Camel case a string using lower case for the first letter
 	 *

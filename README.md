@@ -75,7 +75,7 @@ Scaffolding out new wires is now easy-peasy! With a quick command you can genera
 
 cbwire-cli has the ability to set the default values that are used for actions and the ability to reset all values to the original defaults. What does this mean for you? It means if you primarly use single file wires on all your projects, you can use `cbwire default set create.singleFileWire true` and it will change your default value for the `singleFileWire` aregument when using `cbwire create wire` action!
 
-> 💡Any default changes are global for CommandBox, NOT just the current project.
+> 💡 Any default changes are global for CommandBox, NOT just the current project.
 
 The default setting keys follow the pattern of `[ACTION PATH IN DOT NOTATION].[ARGUMENT]`, meaning for the create action and boxlang argument you would use `cbwire default set create.boxlang true` to set your new default for the `boxlang` argument to always be true.
 
@@ -83,7 +83,7 @@ You can also reset all defaults to the orginal settings with `cbwire default res
 
 In addition you can view all defaults by calling `cbwire default get` or alternativly you can view a single default setting by passing in the key, for example `cbwire default get create.wire.boxlang`.
 
-> 💡uninstalling or re-instlaling cbwire-cli will overwrite the custom defaults and reset all to original base values
+> 💡 Uninstalling or re-instlaling cbwire-cli will overwrite the custom defaults and reset all to original base values
 
 
 ### Default Settings Examples
@@ -110,9 +110,11 @@ Want to change the wire description comment to include something other than the 
 
 ## Contributing to the CBWIRE Module?
 
-The `cbwire-cli` module has a few helper functions to assist in the development of and contribution to the `cbwire` module to make some steps a little easier. All of these servers are in the `cbwire dev` namespace.
+The `cbwire-cli` module has a few helper functions to assist in the development of and contribution to the `cbwire` module to make some steps a little easier. All of these commands are in the `cbwire dev` namespace.
 
-> **Did you know?** Ortus Solutions has a great **Ortus Coding Style Guide**! [Check it out here:](https://github.com/Ortus-Solutions/coding-standards) https://github.com/Ortus-Solutions/coding-standards
+> 💡 All `cbwire dev` commands are designed to be run from the `cbwire` root or test-harness directory!
+
+> 💡 **Did you know?** Ortus Solutions has a great **Ortus Coding Style Guide**! [Check it out here:](https://github.com/Ortus-Solutions/coding-standards) https://github.com/Ortus-Solutions/coding-standards
 
 ### Preparing test-harness server
 

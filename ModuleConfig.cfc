@@ -14,7 +14,8 @@ component {
 	function configure(){
 		settings = {
 			modulePath : modulePath,
-			templatesPath : modulePath & "/templates" 
+			templatesPath : modulePath & "/templates",
+			testHarnessDirectoryName : "test-harness"
 		}
 	}
 
