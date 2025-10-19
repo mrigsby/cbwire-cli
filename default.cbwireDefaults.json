@@ -1,20 +1,32 @@
 {
     "create":{
-		"dataProps":"",
-		"lockedDataProps":"",
-		"actions":"",
-		"outerElement":"div",
-		"lifeCycleEvents":"",
-		"onHydrateProps":"",
-		"onUpdateProps":"",
-		"wiresDirectory":"wires",
-		"appMapping":"",
-		"description":"This wire was created by the cbwire CLI! Please update me!",
-        "jsWireRef":false,
-        "singleFileWire":false,
-        "includePlaceholder":false,
-        "boxlang":false,
-        "open":false,
-        "force":false
+        "wire" : {
+            "dataProps":"",
+            "lockedDataProps":"",
+            "actions":"",
+            "outerElement":"div",
+            "lifeCycleEvents":"",
+            "onHydrateProps":"",
+            "onUpdateProps":"",
+            "wiresDirectory":"wires",
+            "appMapping":"",
+            "description":"This wire was created by the cbwire CLI! Please update me!",
+            "jsWireRef":false,
+            "singleFileWire":false,
+            "includePlaceholder":false,
+            "boxlang":false,
+            "open":false,
+            "force":false
+        }
+    },
+    "dev" : {
+        "server" : {
+            "start" : {
+                "webRunner" : false,
+                "commandBoxRunner" : false,
+                "defaultServer":"server-boxlang-cfml@1.json",
+                "stopRunningTestServers" : true
+            }
+        }
     }
 }

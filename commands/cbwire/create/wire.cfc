@@ -9,9 +9,6 @@
  **/
  component extends="cbwire-cli.models.BaseCommand" {
     
-    property name="cliDefaults";
-    property name="baseCliDefaults";
-
 	/**
 	 * @name             	String : Name of the wire to create without extensions. @module can be used to place in a module wires directory.
 	 * @dataProps        	String : A comma-delimited list of data property keys to add.
@@ -50,21 +47,10 @@
 		boolean open,
 		boolean force
 	){
-		// get any defaults from the cbwireDefaults.json file
-        variables.cliDefaults = getCLIDefaults();
-        variables.baseCliDefaults = getBaseCLIDefaults();
-
-		if( structKeyExists( variables.cliDefaults, "create" ) ){
-			for( var k in variables.cliDefaults.create.keyArray() ){
-				var currentValue = variables.cliDefaults.create[ k ];
-				if( !isStruct( currentValue ) ){
-					if( !arguments.keyExists( k ) ){
-						arguments[ k ] = currentValue;
-					}
-				}
-			}
-		}
-
+		shell.clearScreen();
+		printCBWireCLIHeader();
+		// load defaults into arguments
+		arguments = utility.loadFunctionArgsFromDefaults( "create.wire", arguments );
 		var moduleName = "";
 		// check for module in name and handle finding module directory, path and setting name properly
 		if( find( "@", arguments.name ) ){
@@ -120,38 +106,37 @@
 			var wireComponentPath = resolvePath( "#arguments.wiresDirectory#/#arguments.name#.#arguments.boxlang == false ? "cfc" : "bx"#" );
 		}
 
-		// printInfo( "Wires Folder Path (Relative): #arguments.wiresDirectory#" );
-		printInfo( "Wires Folder Path: #resolvePath( arguments.wiresDirectory )#" );
+		printStyledMessage( "✅ Wires Folder Path: #resolvePath( arguments.wiresDirectory )#" );
 
 		// confirm creation of wire directory if it doesn't exist
 		if( !directoryExists( getDirectoryFromPath( wireTemplatePath ) ) ){
 			if ( !confirm( "The directory '#getDirectoryFromPath( wireTemplatePath )#' does not exist. Should I create it (y/n)?" ) ) {
-				printWarn( "Exiting..." );
+				printWarn( "⛔ Exiting..." );
 				return;
 			}
 			directoryCreate( getDirectoryFromPath( wireTemplatePath ), true, true );
-			printSuccess( "Created Directory: #getDirectoryFromPath( wireTemplatePath )#" );
+			printStyledMessage( "✅ Created Directory: #getDirectoryFromPath( wireTemplatePath )#" );
 		}
 
 		// Confirm it or Force it
 		if ( fileExists( wireTemplatePath ) && !arguments.force && !confirm( "The file '#wireTemplatePath#' already exists, overwrite it (y/n)?" ) ) {
-			printWarn( "Exiting..." );
+			printWarn( "⛔ Exiting..." );
 			return;
 		}
 		// Write out only the template file because the component was injected into the template
 		file action="write" file="#wireTemplatePath#" mode="777" output="#wireTemplate#";
-		printSuccess( "Created Wire Template: #wireTemplatePath#" );
+		printStyledMessage( "✅ Created Wire Template: #wireTemplatePath#" );
 
 		// if not single wire we need to write out the component file
 		if( !arguments.singleFileWire ){
 			// Confirm it or Force it
 			if ( fileExists( wireComponentPath ) && !arguments.force && !confirm( "The file '#wireComponentPath#' already exists, overwrite it (y/n)?" ) ) {
-				printWarn( "Exiting..." );
+				printStyledMessage( "⛔ Exiting..." );
 				return;
 			}
 			// Write out the component and template files
 			file action="write" file="#wireComponentPath#" mode="777" output="#wireComponent#";
-			printSuccess( "Created Wire Component: #wireComponentPath#" );
+			printStyledMessage( "✅ Created Wire Component: #wireComponentPath#" );
 		}
 
 		// open file(s) ?

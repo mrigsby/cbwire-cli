@@ -5,8 +5,8 @@
  * .
  * {code:bash}
  * cbwire default get
- * cbwire default get create.boxlang
- * cbwire default get create.singleFileWire
+ * cbwire default get create.wire.boxlang
+ * cbwire default get create.wire.singleFileWire
  * {code}
  *
  **/
@@ -16,36 +16,53 @@
 	 * @key String : The specific key to lookup (uses dot notation I.E. create.singleFileWire). If not provided, all keys and values will be listed.
 	 **/
 	function run( key ){
-        var cliDefaults = getCLIDefaults();
+        shell.clearScreen();
+        printCBWireCLIHeader();
         if( isNull( arguments.key ) || len( trim( arguments.key ) ) EQ 0 ){
-            printSuccess( "CBWire CLI Default Values" );
-            printInfo( "To lookup a specific default value provide the key name. Example: cbwire get default create.jsWireRef" );
-            outputDefaultStruct( "", cliDefaults );
+            printStyledMessage([
+                "CBWire CLI Default Values",
+                "To lookup a specific default value provide the key name. Example: cbwire get default create.jsWireRef"
+            ]);
+            outputDefaultStruct( "", utility.cliDefaults );
             return;
         }
         try {
-            var keyValue = structGet( "cliDefaults.#arguments.key#" );
+            var keyValue = structGet( "utility.cliDefaults.#arguments.key#" );
             if( isStruct( keyValue ) ){
-                printSuccess( "CBWire CLI #arguments.key# Default Values" );
-                printInfo( "To lookup a specific default value provide the key name. Example: cbwire get default create.jsWireRef" );
-                outputDefaultStruct( "#arguments.key#.", keyValue );
+                printStyledMessage([
+                    "CBWire CLI #arguments.key# Default Values",
+                    "To lookup a specific default value provide the key name. Example: cbwire get default create.jsWireRef",
+                ]);
+                outputDefaultStruct( arguments.key & ".", keyValue );
             }else{
-                printInfo( "#arguments.key# : #formatForCLI( keyValue )#" );
+                outputDefaultStruct( arguments.key, keyValue );
             }
         } catch (any e) {
-            printError( "No CLI defaults found for key: #arguments.key#. Please check your spelling and try again." );
+            printError( "⚠️ No CLI defaults found for key: #arguments.key#. Please check your spelling and try again." );
         }
 	}
 
     private function outputDefaultStruct( prependKey="", structToOutput ){
+        var headerCols = [ 'Key Name', 'Value' ];
+        var dataRows = isStruct( arguments.structToOutput ) 
+            ? getNestedKey( prependKey, structToOutput ) 
+            : [ [ prependKey, formatForCLI( structToOutput ) ] ];
+        print.table(
+            headerNames = headerCols,
+            data = dataRows
+        );
+    }
+
+    private array function getNestedKey( prependKey="", structToOutput, accululator=[] ){
         for( var k in structToOutput.keyArray() ){
             var currentValue = structGet( "structToOutput.#k#" );
             if( isStruct( currentValue ) ){
-                outputDefaultStruct( "#prependKey##k#.", currentValue );
+                arguments.accululator.append( getNestedKey( "#prependKey##k#.", currentValue ), true );
             } else {
-                printInfo( "  #prependKey##k# : #formatForCLI( currentValue )#" );
+                arguments.accululator.append( [ "#prependKey##k#", formatForCLI( currentValue ) ] );
             }
         }
+        return arguments.accululator;
     }
 
  }

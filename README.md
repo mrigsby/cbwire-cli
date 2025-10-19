@@ -94,3 +94,51 @@ Want to always include the `onHydrate` and `onRender` lifecycle methods by defau
 Want to change the wire description comment to include something other than the standard "This wire was created by the cbwire CLI! Please update me!"?
 
 `cbwire default set create.description "Created By John Doe jdoe@jdoe.tld"`
+
+## Contributing to the CBWIRE Module?
+
+The `cbwire-cli` module has a few helper functions to assist in the development of and contribution to the `cbwire` module to make some steps a little easier.
+
+> **Did you know?** Ortus Solutions has a great **Ortus Coding Style Guide**! [Check it out here:](https://github.com/Ortus-Solutions/coding-standards) https://github.com/Ortus-Solutions/coding-standards
+
+### Preparing test-harness server
+
+Before you can run TestBox tests, the test-harness server needs to install ColdBox dependencies! To simplify this you can run the following command that will attempt to move to the `cbwire` module root directory, run the `install` command to install cbwires's ColdBox dependencies and then move to the `test-harness` directory and run the `install` command again to install the `test-harness` server ColdBox dependencies.
+
+`cbwire dev server prepare`
+
+### Running test-harness servers
+
+The `CBWIRE` module has pre-configured CommandBox server json files. To run a server and optionally run the TestBox tests you can run the following commands from command box when in the root of the `CBWIRE` module or the `test-harness` directory.
+
+`cbwire dev server start`
+
+The `cbwire dev server start` command has the following arguments. The default values can be set to your personal prefence using the Custom Defaults options above!
+
+| Argument | Intial Default Value | Description|
+|----------|--------|---------|
+| webRunner | false | open the TestBox Web Runner in the default browser |
+| commandBoxRunner | true | run the TestBox CommandBox Runner |
+| defaultServer | server-boxlang-cfml@1.json | The default server config file to be selected in the list of servers to start  |
+| stopRunningTestServers | true | stop any running test-harness servers before starting the selected server |
+
+#### Examples
+
+Run TestBox CommandBox Runner after server start
+
+`cbwire dev server start --commandBoxRunner`
+
+Run TestBox CommandBox Runner and open the TestBox Web Runner after server start
+
+`cbwire dev server start --commandBoxRunner --webRunner`
+
+If you want to always run the TestBox Web Runner after starting a server you can use this example to set the default value for the `webRunner` argument to true
+
+`cbwire default set dev.server.start.webRunner true`
+
+### Forgetting test-harness servers
+
+Sometimes it's helpful in the development process to use the CommandBox `server forget` option. The CBWIRE CLI provides a quick and easy way to forget a single server or all servers in the `test-harness` directory. When run you will be given the option to select a single server to forget or the option to forget all.
+
+`cbwire dev server forget`
+

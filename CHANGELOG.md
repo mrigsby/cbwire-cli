@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to change default argument values for actions [see readme.md](readme.md)
 - Ability to view default argument values for actions [see readme.md](readme.md)
 - Ability to reset default argument values for actions [see readme.md](readme.md)
+- Added CBWIRE module contribution development helpers 
 
 ### Changed
 
