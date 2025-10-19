@@ -161,7 +161,7 @@ Theres on one option for forgetting a server. When run it will give you options 
 
 ---
 
-### Developed By
+## Developed By
 
 
 ```JSON
