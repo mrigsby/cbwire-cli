@@ -23,7 +23,7 @@
         "server" : {
             "start" : {
                 "webRunner" : false,
-                "commandBoxRunner" : false,
+                "commandBoxRunner" : true,
                 "defaultServer":"server-boxlang-cfml@1.json",
                 "stopRunningTestServers" : true
             }
