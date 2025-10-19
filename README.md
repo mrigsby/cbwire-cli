@@ -157,7 +157,7 @@ Sometimes it's helpful in the development process to use the CommandBox `server 
 
 #### Example
 
-Theres on one option for forgetting a server. When run it will give you options to select a specific server to forget or the option to forget all test-harness servers.
+Theres only one command for forgetting `test-harness` server(s). When run it will give you options to select a specific server to forget or the option to forget all test-harness servers.
 
 `cbwire dev server forget`
 
