@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `boxlang` aregument to `cbwire create wire` for creating boxlang wires (.bx & .bxm)
+- `boxlang` argument to `cbwire create wire` for creating BoxLang wires (.bx & .bxm)
 - Ability to change default argument values for actions [see readme.md](readme.md)
 - Ability to view default argument values for actions [see readme.md](readme.md)
 - Ability to reset default argument values for actions [see readme.md](readme.md)
