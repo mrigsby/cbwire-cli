@@ -17,12 +17,8 @@
 	 * 
 	 **/
 	function run(){
-		if( !verifyInTestHarnessDirectory() ){
-			return;
-		}
-		if( !loadTestingServersConfig() ){
-			return;
-		}
+		if( !verifyInTestHarnessDirectory() ){ return; }
+		if( !loadTestingServersConfig() ){ return; }
 		
 		shell.clearScreen();
 		printCBWireCLIHeader();

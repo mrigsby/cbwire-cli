@@ -27,6 +27,10 @@
                 "defaultServer" : "server-boxlang-cfml@1.json",
                 "stopRunningTestServers" : true
             }
+        },
+        "tests" : {
+            "deletePreviousReports" : true,
+            "defaultServer" : "ALL"
         }
     }
 }

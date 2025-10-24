@@ -22,12 +22,8 @@
      * 
 	 **/
 	function run( webRunner, commandBoxRunner, defaultServer, stopRunningTestServers ){
-		if( !verifyInTestHarnessDirectory() ){
-			return;
-		}
-		if( !loadTestingServersConfig() ){
-			return;
-		}
+		if( !verifyInTestHarnessDirectory() ){ return; }
+		if( !loadTestingServersConfig() ){ return; }
 	
 		shell.clearScreen();
 		printCBWireCLIHeader();
@@ -71,6 +67,11 @@
         command( 'server start' )
 			.params( serverConfigFile="#variables.workingDirectory##variables.testHarnessServers[ serverToOpen ].file#" )
 			.run();
+
+        if( !waitForServerToStart( serverToOpen, variables.testHarnessServers[ serverToOpen ] ) ){
+            printWarn( "⛔️ Could not start #variables.settings.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToOpen ].name#!" );
+            return;
+        }
 
 		print.line();
 		printStyledMessage( "✅️ #variables.settings.testHarnessDirectoryName# server: #variables.testHarnessServers[ serverToOpen ].name# is running!" );

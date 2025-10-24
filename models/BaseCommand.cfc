@@ -3,9 +3,10 @@
  */
 component accessors="true" {
 
-	property name="utility"        inject="utility@cbwire-cli";
-	property name="settings"       inject="box:modulesettings:cbwire-cli";
-	property name="config"         inject="box:moduleconfig:cbwire-cli";
+	property name="serverService"	inject="ServerService";
+	property name="utility"        	inject="utility@cbwire-cli";
+	property name="settings"       	inject="box:modulesettings:cbwire-cli";
+	property name="config"         	inject="box:moduleconfig:cbwire-cli";
     
 	property name="cliDefaults";
 	property name="baseCliDefaults";
@@ -147,8 +148,12 @@ component accessors="true" {
 	function printCBWireCLIHeader( functionTitle="" ){
 		print.boldColor178OnBlackLine( repeatString( "*", variables.cliDefaultLength ) ).toConsole();
 		print.boldColor178OnBlackLine( centerStringWithStars() ).toConsole();
-		print.boldColor178OnBlackLine( centerStringWithStars( "⚡️ CBWIRE-CLI ⚡️" ) ).toConsole();
-		print.boldColor178OnBlackLine( centerStringWithStars( "An UN-Official CLI for CBWIRE" ) ).toConsole();
+		var asciiArt = variables.utility.generateAsciiArt( "CBWIRE-CLI", 118 );
+        for( var line IN asciiArt ){
+            print.boldColor178OnBlackLine( centerStringWithStars( line ) ).toConsole();
+        }
+		print.boldColor178OnBlackLine( centerStringWithStars() ).toConsole();
+		print.boldColor178OnBlackLine( centerStringWithStars( "⚡️ An UN-Official CLI for CBWIRE ⚡️" ) ).toConsole();
 		if( len( arguments.functionTitle ) ){
 			print.boldColor178OnBlackLine( centerStringWithStars() ).toConsole();
 			print.boldColor178OnBlackLine( centerStringWithStars( arguments.functionTitle ) ).toConsole();
@@ -267,7 +272,20 @@ component accessors="true" {
 				"label" : "#getPrettyCFEngineName( serverConfig.app.cfengine )# ( #configFile# )"
 			};
 		}
-		return serversConfig;
+
+		// order serversConfig by name
+		var newOrderedStruct = [:];
+		var serversConfigKeys = serversConfig.keyArray().sort( function ( e1, e2 ){
+			return compare( 
+				serversConfig[ e1 ].name.replaceNoCase( "cbwire-", "", "one" ), 
+				serversConfig[ e2 ].name.replaceNoCase( "cbwire-", "", "one" )
+			);
+		});
+		for( var key in serversConfigKeys ){
+			newOrderedStruct[ key ] = serversConfig[ key ];
+		}
+		return newOrderedStruct;
+		// return serversConfig;
 	}
 
 	function getPrettyCFEngineName( cfEngine ){
@@ -290,5 +308,49 @@ component accessors="true" {
 		}
 		return true;
 	}
+
+    private boolean function waitForServerToStart( engineKey, engineConfig, loopWaitTime=1000, maxWaitLoops=30 ){
+        var loops = 0;
+        var serverStarted = false;
+        var breakLoop = false;
+
+        job.start( '⌛ Waiting for #engineConfig.label# server to start...' );
+
+        var serverConfigData = {
+            "name" : engineConfig.name,
+            "directory" : variables.settings.testHarnessDirectoryName,
+            "serverConfigFile" : engineConfig.file
+        };
+
+        // A struct that can contains name, directory, and/or serverConfigFile
+        var serverDetails = variables.serverService.resolveServerDetails( serverConfigData );
+
+        while( !serverStarted && !breakLoop && loops < arguments.maxWaitLoops ){
+            sleep( arguments.loopWaitTime );
+            // Refresh server info
+            serverDetails = variables.serverService.resolveServerDetails( serverConfigData );
+            switch( serverDetails.SERVERINFO.status ){
+                case "running":
+                    job.addSuccessLog ( '✅ Server is started!' );
+                    serverStarted = true;
+                    break; 
+                case "starting":
+                    job.addLog( '⌛ Still waiting...' );
+                    break; 
+                case "stopped":
+                    job.addErrorLog( '⛔ Oh No... Status is STOPPED... Did it have a problem?' );
+                    breakLoop = true;
+                    break; 
+                default: 
+                    job.addErrorLog( '⛔ Oh No... Status is unknown!' );
+                    breakLoop = true;
+                    break; 
+            }
+            loops++;
+        }
+
+        job.complete();
+        return serverStarted;
+    }
 
 }
