@@ -15,9 +15,7 @@
 	 * Prepares the test-harness servers by installing dependencies
 	 **/
 	function run(){
-		if( !verifyInRootDirectory() ){
-			return;
-		}
+		if( !verifyInTestHarnessDirectory() ){ return; }
 
 		shell.clearScreen();
 		printCBWireCLIHeader( "🚀 Prepare Server ➤ Install ColdBox Dependencies" );
